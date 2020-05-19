@@ -1,0 +1,61 @@
+<!-- 
+Flipper Move Selector
+-->
+<behaviourtemplates>
+<is name="moves">{
+	"initialized": false
+}</is>
+<javascript><![CDATA[
+var FLIPPERMOVES = (function() {
+
+	var handleNewDGEPMoves = function(res) {
+		print("NEW(?) MOVES FROM DGEP: "+JSON.stringify(res.params));
+		
+		// select (first) move from (first) actor:
+		var newMove = undefined;
+		for (var actorIdentifier in res.params.moves) {
+		    if (res.params.moves.hasOwnProperty(actorIdentifier) && res.params.moves[actorIdentifier].length > 0) {
+	    		newMove = res.params.moves[actorIdentifier][0];
+				break;
+		    }
+		}
+		
+		if (!newMove || (is.moves.currentMove && is.moves.currentMove.moveID == newMove.moveID)) {
+			print("No move selected from moveset, or selected move same as previous selected move");
+			// This is a quick hack to prevent selecting the same move twice if dgep shares the same moveset multiple times);
+			return;
+		} else {
+			is.moves.currentMove = newMove
+		}
+		
+		print("Selected Move: "+JSON.stringify(is.moves.currentMove));
+		
+		// TODO: realize move intent and wait for intent to be completed...
+		
+		// ...Then call:
+		ENV.queueMessage("dgep", "move_completed", is.moves.currentMove);	
+	}
+	
+	function Init() {
+		ENV.register("dgepmoves", handleNewDGEPMoves);
+		return true;
+	}
+	
+    return {
+        Init: Init
+    };
+})();
+]]></javascript>
+
+<template id="moves.init" name="Initialize Flipper Moves"> 
+	<preconditions>
+		<condition><![CDATA[ ENV.isInitialized() ]]></condition>
+		<condition><![CDATA[ !is.moves.initialized ]]></condition>
+	</preconditions>
+	<effects>
+		<assign is="is.moves.initialized">FLIPPERMOVES.Init();</assign>
+	</effects>
+</template>
+
+
+</behaviourtemplates>

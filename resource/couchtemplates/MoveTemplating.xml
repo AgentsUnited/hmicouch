@@ -1,0 +1,153 @@
+<!-- 
+Flipper Move Templating
+
+This module takes the moves from DGEP and fills out some values in template slots in that move.
+
+in YARN/DGEP you can now use several codes inside the "opener" texts.
+They have to be enclosed by &&& &&& (three ampersand before and after). Ampersand because <[{#$ are all already taken for other goals somewhere in the chain
+
+Typical values that you have to put here and there should be very restricted in format; both YARN and DGEP put limitations on which chars you can use within the opener value of a rule.
+
+&&& skb:<some_expression> &&&
+Template slot in the opener that is to be replaced by data from the COUCH Shared Knowledge Base, e.g. number of steps of the user in last 24 hours. Format for some_expression still very fluid...
+
+&&& fml_template:<template_name> &&&
+Ask Greta intent realizer to use the specified FML template file; use the rest of the opener text as parameter $text$ to be processed within the FML template
+template_name is without path and without suffix.
+
+&&& fml_param:<param_name>:<param_value> &&&
+Additional params to be filled in as replacement in the template
+
+&&& bml_template:<template_name> &&&
+Ask ASAP intent realizer to use the specified BML template file; use the rest of the opener text as parameter $text$ to be processed within the BML template
+template_name is without path and without suffix.
+
+-->
+<behaviourtemplates>
+<is name="moves">{
+	"initialized": false
+}</is>
+<javascript><![CDATA[
+var FLIPPERMOVES = (function() {
+    var imports = new JavaImporter(java.util.regex, java.util);
+    with (imports) 
+    {
+
+        var pSkb = Pattern.compile("\\*\\^\\^\\s*skb:([^\\*]*)\\s*\\^\\^\\*");
+        var pFml = Pattern.compile("\\*\\^\\^\\s*fml_template:([^\\*]*)\\s*\\^\\^\\*");
+        var pBml = Pattern.compile("\\*\\^\\^\\s*bml_template:([^\\*]*)\\s*\\^\\^\\*");
+        var pUrl = Pattern.compile("\\*\\^\\^\\s*url:([^\\*]*)\\s*\\^\\^\\*");
+        var pDeic = Pattern.compile("\\*\\^\\^\\s*deictic:([^\\*]*)\\s*\\^\\^\\*");
+        var pAll = Pattern.compile("\\*\\^\\^([^\\*]*)\\^\\^\\*");
+
+        var transformMove = function(move) {
+            //do a regexp for all template skp entries
+            m = pSkb.matcher(move.opener);  
+            while (m.find())
+            {
+                slot = m.group();
+                shortslot= m.group(1).trim();
+                print("SKB Slot: {} -- {}",slot,shortslot);
+                //for all template slots, get the right values from the SKB
+                switch (shortslot) {
+                    case "test":
+                        move.opener = move.opener.replace(slot,"this is a test of the template filler");
+                    default:
+                        move.opener = move.opener.replace(slot,"Unknown S K B Slot Entry");
+                }
+            }
+            //do a regexp for all fml_template entries (should be one; in case of multiple, we use the last one and log a warning)
+            m = pFml.matcher(move.opener);  
+            while (m.find())
+            {
+                if (!move.fml_template.equals("")) print("WARNING: FML Template Slot: more than one template found");
+                slot = m.group();
+                shortslot= m.group(1).trim();
+                move.fml_template = shortslot;
+                print("FML Template Slot: {} -- {}",slot,shortslot);
+                move.opener = move.opener.replace(slot,"");
+            }
+            //do a regexp for all bml_template entries (should be one; in case of multiple, we use the last one and log a warning)
+            m = pBml.matcher(move.opener);  
+            while (m.find())
+            {
+                if (!move.bml_template.equals("")) print("WARNING: BML Template Slot: more than one template found");
+                slot = m.group();
+                shortslot= m.group(1).trim();
+                move.bml_template = shortslot;
+                print("BML Template Slot: {} -- {}",slot,shortslot);
+                move.opener = move.opener.replace(slot,"");
+            }
+            //do a regexp for all url entries (should be one; in case of multiple, we use the last one and log a warning)
+            m = pUrl.matcher(move.opener);  
+            while (m.find())
+            {
+                if (!move.url.equals("")) print("WARNING: URL Slot: more than one template found");
+                slot = m.group();
+                shortslot= m.group(1).trim();
+                move.url = shortslot;
+                print("URL Slot: {} -- {}",slot,shortslot);
+                move.opener = move.opener.replace(slot,"");
+            }
+			//do a regexp for all deictic entries (should be one; in case of multiple, we use the last one and log a warning)
+            m = pDeic.matcher(move.opener);  
+            while (m.find())
+            {
+                if (!move.deictic.equals("")) print("WARNING: deictic Slot: more than one template found");
+                slot = m.group();
+                shortslot= m.group(1).trim();
+                move.deictic = shortslot;
+                print("deictic Slot: {} -- {}",slot,shortslot);
+                move.opener = move.opener.replace(slot,"");
+            }
+            //do a regexp for all remaining entries
+            m = pAll.matcher(move.opener);  
+            while (m.find())
+            {
+                slot = m.group();
+                shortslot= m.group(1).trim();
+                print("Unknown Slot Type: {} -- {}",slot,shortslot);
+                //for all template slots, get the right values from the SKB
+                move.opener = move.opener.replace(slot,"Unknown Other Slot Entry");
+            }            
+            return move;
+        }
+        
+        var transformMoves = function(res) {
+            //print("Got flipper moves: "+JSON.stringify(res.params, null, 2));
+            var newMoveSets = [];
+            for (var s = 0; s < res.params.moveSets.length; s++) {
+                var moveSet = res.params.moveSets[s];
+                for (var m = 0; m < moveSet.moves.length; m++) {
+                    moveSet.moves[m] = transformMove(moveSet.moves[m]);
+                }
+                newMoveSets.push(moveSet);
+            }
+            
+            ENV.queueResponse(res, { moveSets: newMoveSets });
+        }
+        
+        function Init() {
+            // Register to "movesets" type messages (sent by FlipperMoveProxy).
+            ENV.register("movesets", transformMoves);
+            return true;
+        }
+        
+        return {
+            Init: Init
+        };
+    }
+})();
+]]></javascript>
+
+<template id="moves.init" name="Initialize Flipper Move Templating"> 
+	<preconditions>
+		<condition><![CDATA[ ENV.isInitialized() ]]></condition>
+		<condition><![CDATA[ !is.moves.initialized ]]></condition>
+	</preconditions>
+	<effects>
+		<assign is="is.moves.initialized">FLIPPERMOVES.Init();</assign>
+	</effects>
+</template>
+
+</behaviourtemplates>

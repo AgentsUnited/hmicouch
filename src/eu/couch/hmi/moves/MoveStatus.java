@@ -1,0 +1,11 @@
+package eu.couch.hmi.moves;
+
+public enum MoveStatus {
+	MOVE_SELECTED,
+	MOVE_PLANNED,
+	MOVE_REALIZATION,
+	MOVE_MINIMUM_COMPLETED,
+	MOVE_COMPLETED,
+	MOVE_FAILED,
+	MOVE_CANCELLED
+}

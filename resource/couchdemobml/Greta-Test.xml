@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<bml id="gretagazebml" xmlns="http://www.bml-initiative.org/bml/bml-1.0">
+<gazeShift id="gaze4" start="1" end="5" influence="" target="head_COUCH_M_2_OLD"/>
+</bml>

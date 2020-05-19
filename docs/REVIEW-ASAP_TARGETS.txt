@@ -1,0 +1,8 @@
+head_COUCH_CAMILLE
+head_COUCH_M_1
+head_COUCH_M_2
+head_COUCH_F_1
+l_hand_COUCH_M_1 etc (including CAMILLE)
+r_hand_COUCH_M_1 etc (including CAMILLE)
+head_COUCH_USER
+BrowserGazeTarget

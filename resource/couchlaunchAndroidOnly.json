@@ -1,0 +1,6 @@
+{
+	"instance": "ASAP COUCH",
+	"agents": [
+        { "charId": "COUCH_M_Android_1", "spec": "multiAgentSpecs/uma/UMA1.xml" }
+	]
+}

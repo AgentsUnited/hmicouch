@@ -1,0 +1,10 @@
+<bml id="sp1"  xmlns="http://www.bml-initiative.org/bml/bml-1.0" characterId="COUCH_M_1">
+	<speech start="0"  id = "speech1">
+	  <text>Hello there! Welcome to the couch scene in virtual reality. I am agent 1</text>
+	</speech>	
+</bml>
+<bml id="sp2"  xmlns="http://www.bml-initiative.org/bml/bml-1.0" characterId="COUCH_M_2">
+	<speech start="sp1:speech1:end+1"  id = "speech1">
+	  <text>And I am agent 2, nice to meet you</text>
+	</speech>	
+</bml>

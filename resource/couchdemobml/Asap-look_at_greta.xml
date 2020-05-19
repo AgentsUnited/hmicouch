@@ -1,0 +1,5 @@
+<bml id="gazebml1" xmlns="http://www.bml-initiative.org/bml/bml-1.0" characterId="COUCH_f_1">
+<gazeShift id="gaze1" influence="NECK" target="BrowserGazeTarget" start="0" end="1" />
+<gazeShift id="gaze2" influence="NECK" target="head_COUCH_M_1" start="5" end="6" />
+<gazeShift id="gaze3" influence="NECK" target="BrowserGazeTarget" start="9" end="10" />
+</bml>

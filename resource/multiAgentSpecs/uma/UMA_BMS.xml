@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<AsapVirtualHuman id="UMA">
+  <Loader id="realizer" loader="asap.realizerembodiments.MultiAgentAsapRealizerEmbodiment">
+    <SharedPort id="sharedPort"/>
+  </Loader>
+  <Loader id="unityembodiment" loader="hmi.unityembodiments.loader.UnityEmbodimentLoader">
+    <SharedMiddleware id="sharedMiddleware1"/>
+  </Loader>
+  <Loader id="mixedskeletonembodiment" loader="hmi.physicsenvironment.MixedSkeletonEmbodimentLoader" requiredloaders="unityembodiment"/>
+  <Loader id="physicalembodiment" loader="hmi.physicsenvironment.OdePhysicalEmbodiment" requiredloaders="mixedskeletonembodiment">
+  </Loader>
+  <Loader id="animationengine" loader="asap.animationengine.loader.MixedAnimationEngineLoader" requiredloaders="mixedskeletonembodiment,physicalembodiment">
+    <GestureBinding basedir="" resources="" filename="Humanoids/uma/gesturebinding/gesturebinding_bms.xml"/>
+    <StartPose>
+      <RestPose type="SkeletonPose" file="Humanoids/uma/restposes/stand_bms.xml"/>
+    </StartPose>
+	<!--
+    <Hns resources="Humanoids/armandia/hns" filename="hns_armandia.xml"/>
+    <HnsHandShape dir="Humanoids/shared/handshapes"/>
+	-->
+  </Loader>
+  <Loader id="faceengine" loader="asap.faceengine.loader.FaceEngineLoader" requiredloaders="unityembodiment">
+    <FaceBinding basedir="" resources="Humanoids/uma/facebinding/" filename="facebinding_iva.xml" facs2morphmappingresources="Humanoids/uma/facs2morph/" facs2morphmappingfilename="facs2morphmapping.xml"/>
+  </Loader>
+  <Loader id="facelipsync" requiredloaders="faceengine" loader="asap.faceengine.loader.TimedFaceUnitLipSynchProviderLoader">
+    <MorphVisemeBinding resources="Humanoids/uma/facebinding/" filename="visemebinding_disney.xml"/>
+  </Loader>
+  <!--
+  <Loader id="ttsbinding" loader="asap.marytts5binding.loader.MaryTTSBindingLoader">
+    <PhonemeToVisemeMapping resources="Humanoids/shared/phoneme2viseme/" filename="sampaen2disney.xml"/>
+  </Loader>
+  <Loader id="speechengine" loader="asap.speechengine.loader.SpeechEngineLoader" requiredloaders="facelipsync,ttsbinding">
+    <Voice factory="WAV_TTS" voicename="dfki-spike"/>
+  </Loader>
+  -->
+  
+    
+<Loader id="ttsbinding" loader="asap.sapittsbinding.loader.SapiTTSBindingLoader">
+</Loader>
+<Loader id="speechengine" loader="asap.speechengine.loader.SpeechEngineLoader" requiredloaders="facelipsync,ttsbinding">
+  <Voice factory="WAV_TTS" voicename="Microsoft Mark" />
+</Loader>
+
+
+<Loader id="breathingengine" loader="asap.emitterengine.loader.EmitterEngineLoader">
+<EmitterInfo class="asap.breathingemitter.BreathingEmitterInfo"/>
+</Loader>
+
+<Loader id="blinkengine" loader="asap.emitterengine.loader.EmitterEngineLoader">
+<EmitterInfo class="asap.blinkemitter.BlinkEmitterInfo"/>
+</Loader>
+
+</AsapVirtualHuman>

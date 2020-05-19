@@ -1,0 +1,5 @@
+<bml id="$bml_id$"  xmlns="http://www.bml-initiative.org/bml/bml-1.0" characterId="$char_id$">
+	<wait start="0" id="s1">
+	  <text>OK!</text>
+	</speech>	
+</bml>

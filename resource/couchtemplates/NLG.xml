@@ -1,0 +1,49 @@
+<!-- 
+NLG for BORG experiment
+-->
+<behaviourtemplates>
+<is name="nlg">{
+	"initialized": false
+}</is>
+<javascript><![CDATA[
+var NLG = (function() {
+	function Init() {
+		return true;
+	}
+	
+    return {
+        Init: Init
+    };
+})();
+]]></javascript>
+
+<template id="nlginit" name="nlginit"> 
+	<preconditions>
+		<condition><![CDATA[ ENV.isInitialized() ]]></condition>
+		<condition><![CDATA[!is.nlg.initialized]]></condition>
+	</preconditions>
+	<effects>
+		<assign is="is.nlg.initialized">NLG.Init();</assign>
+		<!-- TODO: Initialize possible java helper objects, etc. -->
+	</effects>
+</template>
+
+
+<!--  START SIMPLE NLG RULES  -->
+
+<template id="nlgrule.borg.999" name="Set Default Text" conditional="true"> 
+	<preconditions>
+		<condition><![CDATA[ PLN.CP() != null ]]></condition>
+		<condition><![CDATA[ PLN.CP().LastBlockWithBehaviorIdx("speech") < 0 ]]></condition>
+		<condition><![CDATA[ PLN.CP().HasDefaultSurfaceText() ]]></condition>
+	</preconditions>
+	<effects>
+		<assign is="is.nlg.null"><![CDATA[
+			PLN.CP().Block({ id: "MAINSPEECH", composition: "MERGE" })
+				.Speech({ start: "0" }, { text: PLN.CP().DefaultSurfaceText() })
+		]]></assign>
+	</effects>
+</template>
+
+
+</behaviourtemplates>

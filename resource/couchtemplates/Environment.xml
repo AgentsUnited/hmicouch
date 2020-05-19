@@ -1,0 +1,314 @@
+<!--
+Environment for BORG Experiment
+-->
+<behaviourtemplates>
+<is name="env">
+{
+	"temp": { "newenvmsgs":[], "newenvresponses":[], "newenvoutmsgs": [] },
+	"initialized":false,
+	"initnoerror":false,
+	"environmentSpec": {
+		"environments": [
+			{
+				"id":"authEnv", "loader":"eu.couch.hmi.environments.AuthEnvironment", "requiredloaders": [],
+				"params": {
+					"AuthServiceMiddleware": {
+						"loaderClass": "nl.utwente.hmi.middleware.HTTPRequest.HTTPRequestLoader",
+						"properties": {
+							"HTTPRequestURL": "https://servletstest.rrdweb.nl/wool/v1/auth/login",
+							"HTTPRequestMethod": "POST",
+							"HTTPRequestHeader_Content-Type":"application/json"
+						}
+					},
+					"SSOMiddleware": {
+						"loaderClass": "nl.utwente.hmi.middleware.activemq.ActiveMQMiddlewareLoader",
+						"properties": {
+							"iTopic": "COUCH/DUMMY/IN",
+							"oTopic": "COUCH/USER/AUTHENTICATION"
+						}
+					},
+					"SSOCCEMiddleware": {
+						"loaderClass": "nl.utwente.hmi.middleware.HTTPRequest.HTTPRequestLoader",
+						"properties": {
+							"HTTPRequestURL": "https://servletstest.rrdweb.nl/r2d2/v5.1.2/TODO",
+							"HTTPRequestMethod": "POST"
+						}
+					},
+					"username":"test001@council-of-coaches.eu",
+					"password":"beqewymoh"
+				}
+			}, { 	
+				"id":"bml", "loader":"eu.couch.hmi.environments.BMLEnvironment", "requiredloaders": [],
+				"params": {
+					"publishBmlFeedback": true,
+					"middleware": {
+						"loaderClass": "nl.utwente.hmi.middleware.activemq.ActiveMQMiddlewareLoader",
+						"properties": {
+							"iTopic": "COUCH/BML/FEEDBACK/ASAP",
+							"oTopic": "COUCH/BML/REQUEST/ASAP"
+						}
+					}
+				}
+			}, { 	
+				"id":"fml", "loader":"eu.couch.hmi.environments.FMLEnvironment", "requiredloaders": [],
+				"params": {
+					"publishFmlFeedback": true,
+					"characterIds": ["COUCH_CAMILLE","COUCH_LAURA"],
+					"middleware": {
+						"loaderClass": "nl.utwente.hmi.middleware.activemq.ActiveMQMiddlewareLoader",
+						"properties": {
+							"iTopicPrefix": "COUCH/FEEDBACK/",
+							"oTopicPrefix": "COUCH/FML/REQUEST/"
+						}
+					},
+					"middlewarebml": {
+						"loaderClass": "nl.utwente.hmi.middleware.activemq.ActiveMQMiddlewareLoader",
+						"properties": {
+							"iTopicPrefix": "COUCH/FEEDBACK/",
+							"oTopicPrefix": "COUCH/BML/REQUEST/"
+						}
+					}
+				}
+			}, { 	
+				"id":"asapIntent", "loader":"eu.couch.hmi.intent.planner.AsapIntentRealizer", "requiredloaders": [ "bml" ],
+				"params": {
+					"bmlTemplateDir":"bmltemplates"
+				}
+			}, {	
+				"id":"gretaIntent", "loader":"eu.couch.hmi.intent.planner.GretaIntentRealizer", "requiredloaders": [ "fml" ],
+				"params": {
+					"fmlTemplateDir":"fmltemplates"
+				}
+			}, {
+				"id":"skb", "loader":"eu.couch.hmi.environments.SKBEnvironment", "requiredloaders": ["authEnv"],
+				"params": {
+					"set-variables": {
+						"loaderClass": "nl.utwente.hmi.middleware.HTTPRequest.HTTPRequestLoader",
+						"properties": {
+							"HTTPRequestURL": "https://servletstest.rrdweb.nl/wool/v1/variables",
+							"HTTPRequestMethod": "POST",
+							"HTTPRequestHeader_Content-Type":"application/json"
+						}
+					},
+					"get-variables": {
+						"loaderClass": "nl.utwente.hmi.middleware.HTTPRequest.HTTPRequestLoader",
+						"properties": {
+							"HTTPRequestURL": "https://servletstest.rrdweb.nl/wool/v1/variables",
+							"HTTPRequestMethod": "GET"
+						}
+					}
+				}
+			}, {
+				"id":"dgep", "loader":"eu.couch.hmi.environments.DGEPEnvironment", "requiredloaders": [ "authEnv", "skb" ],
+				"params": {
+					"dgepCtrlMiddleware": {
+						"loaderClass": "nl.utwente.hmi.middleware.activemq.ActiveMQMiddlewareLoader",
+						"properties": {
+							"iTopic": "DGEP/response",
+							"oTopic": "DGEP/requests"
+						}
+					},
+					"dgepMovesMiddleware": {
+						"loaderClass": "nl.utwente.hmi.middleware.activemq.ActiveMQMiddlewareLoader",
+						"properties": {
+							"iTopic": "DGEP/moves",
+							"oTopic": "DGEP/requests"
+						}
+					}
+				}
+			}, {
+				"id":"simplefilter", "loader":"eu.couch.hmi.environments.SimpleFilterEnvironment", "requiredloaders": [ "dgep" ],
+				"params": {}
+			}, {
+				"id":"flipperMoveProxy", "loader":"eu.couch.hmi.environments.FlipperMoveProxy", "requiredloaders": [ "dgep" ],
+				"params": {}
+			}, {
+				"id":"cce", "loader":"eu.couch.hmi.environments.CCEEnvironment", "requiredloaders": ["authEnv"],
+				"params": {
+					"get-new-topic": {
+						"loaderClass": "nl.utwente.hmi.middleware.HTTPRequest.HTTPRequestLoader",
+						"properties": {
+							"HTTPRequestURL": "https://servletstest.rrdweb.nl/coaching-engine/get-new-topic",
+							"HTTPRequestMethod": "GET"
+						}
+					}
+				}
+			}, {
+				"id":"ui", "loader":"eu.couch.hmi.environments.UIEnvironment", "requiredloaders": [ "flipperMoveProxy" ],
+				"params": {
+					"middleware": {
+						"loaderClass": "nl.utwente.hmi.middleware.activemq.ActiveMQMiddlewareLoader",
+						"properties": {
+							"iTopic": "COUCH/UI/REQUESTS",
+							"oTopic": "COUCH/UI/STATE"
+						}
+					}
+				}
+			}, {
+				"id":"floormanagement", "loader":"eu.couch.hmi.environments.FloorManagementEnvironment", "requiredloaders": [ "dgep", "ui" ],
+				"params": {
+					"middleware": {
+						"loaderClass": "nl.utwente.hmi.middleware.activemq.ActiveMQMiddlewareLoader",
+						"properties": {
+							"iTopic": "COUCH/GBM/RESPONSE",
+							"oTopic": "COUCH/GBM/REQUEST"
+						}
+					},
+					"style":"FCFS"
+				}
+			}, {
+				"id":"dialogueloader", "loader":"eu.couch.hmi.environments.DialogueLoaderEnvironment",
+					"requiredloaders": [ "dgep", "gretaIntent", "asapIntent", "ui", "flipperMoveProxy", "floormanagement" ],
+				"params": {}
+			}, {
+				"id":"sse", "loader":"eu.couch.hmi.environments.SocialSaliencyEnvironment",
+					"requiredloaders": [ "bml", "fml", "dialogueloader", "asapIntent", "gretaIntent" ],
+				"params": {
+					"sameSaliencyEpsilon":0.01,
+					"updateSpeed":50
+				}
+			}
+		]
+	}
+}
+</is>
+<javascript><![CDATA[
+function prnt(val) {
+	print(JSON.stringify(val));
+	return true;
+}
+
+var ENV = (function() {
+	
+	var messageQueue = [];
+	
+	var listeners = [];
+	
+	function register(msgtype, cb) {
+		listeners.push({ msgtype: msgtype, cb: cb });
+	}
+	
+	function publishMsg(msgtype, msg) {
+		for (var i = 0; i < listeners.length; i++) {
+			if (listeners[i].msgtype == msgtype) {
+				listeners[i].cb(msg);
+			}
+		}
+	}
+
+	function handleEnvironmentMessages(msgs) {
+		for (var i = 0; i < msgs.length; i++) {
+			//print("msg > "+JSON.stringify(msgs[i]));
+			publishMsg(msgs[i].cmd, msgs[i]);
+		}
+		return [];
+	}
+	
+	function handleEnvironmentResponses(msgs) {
+		for (var i = 0; i < msgs.length; i++) {
+			//print("res > "+JSON.stringify(msgs[i]));
+			publishMsg(msgs[i].cmd, msgs[i]);
+		}
+		return [];
+	}
+	
+	function haveMessagesQueued() {
+		return messageQueue.length > 0;
+	}
+	
+	function queueMessage(environment, cmd, params) {
+		var msgId = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+		messageQueue.push({
+			environment: environment,
+			cmd: cmd,
+			msgId: msgId,
+			params: params
+		});
+		return msgId;
+	}
+	
+	function queueResponse(respondTo, params) {
+		messageQueue.push({
+			environment: respondTo.environment,
+			cmd: respondTo.cmd,
+			msgId: respondTo.msgId,
+			params: params
+		});
+		return respondTo.msgId;
+	}
+	
+	function getEntireMessageQueue() {
+		var res = messageQueue;
+		messageQueue = [];
+		return res;
+	}
+	
+    return {
+    	register: register,
+        handleEnvironmentMessages: handleEnvironmentMessages,
+        queueMessage: queueMessage,
+        handleEnvironmentResponses: handleEnvironmentResponses,
+        haveMessagesQueued: haveMessagesQueued,
+        getEntireMessageQueue: getEntireMessageQueue,
+        queueResponse: queueResponse,
+        isInitialized: function() {
+        	return is.env.initialized && is.env.initnoerror;
+        }
+    };
+})();
+]]></javascript>
+
+<!-- Initialize environments -->
+<template id="env000" name="InitENV"> 
+	<preconditions>
+		<condition><![CDATA[!is.env.initialized]]></condition>
+	</preconditions>
+	<effects>
+		<method name="init" is="is.env.initnoerror">
+			<object persistent="is.env.persistent.BUS" class="hmi.flipper.environment.FlipperEnvironmentBus">  
+				<constructors/>
+			</object>  
+			<arguments>
+				<value class="String" is="is.env.environmentSpec" is_type="JSONString"/>
+			</arguments>
+		</method>
+		<assign is="is.env.initialized">true</assign>
+	</effects>
+</template>
+
+<!-- Get Messages -->
+<template id="env100" name="ENVMessages IN"> 
+	<preconditions>
+		<condition><![CDATA[ ENV.isInitialized() ]]></condition>
+		<method name="hasMessages">
+        	<object persistent="is.env.persistent.BUS" class="hmi.flipper.environment.FlipperEnvironmentBus"/>
+        </method>
+    </preconditions>
+	<effects>
+		<method name="getMessages" is="is.env.temp.newenvmsgs" is_type="JSONString">
+			<object persistent="is.env.persistent.BUS" class="hmi.flipper.environment.FlipperEnvironmentBus" />
+		</method>
+		<assign is="is.env.temp.newenvmsgs"><![CDATA[ ENV.handleEnvironmentMessages(is.env.temp.newenvmsgs); ]]></assign>
+	</effects>
+</template>
+
+<!-- Send Messages -->
+<template id="env101" name="ENVMessages OUT"> 
+	<preconditions>
+		<condition><![CDATA[ is.env.initialized ]]></condition>
+		<condition><![CDATA[ !is.env.initerror ]]></condition>
+		<condition><![CDATA[ ENV.haveMessagesQueued() ]]></condition>
+    </preconditions>
+	<effects>
+		<assign is="is.env.temp.newenvoutmsgs"><![CDATA[ ENV.getEntireMessageQueue() ]]></assign>
+		<method name="sendMessages" is="is.env.temp.newenvresponses" is_type="JSONString">
+			<object persistent="is.env.persistent.BUS" class="hmi.flipper.environment.FlipperEnvironmentBus" />
+			<arguments>
+				<value class="String" is="is.env.temp.newenvoutmsgs" is_type="JSONString"/>
+			</arguments>
+		</method>
+		<assign is="is.env.temp.newenvresponses"><![CDATA[ ENV.handleEnvironmentResponses(is.env.temp.newenvresponses) ]]></assign>
+	</effects>
+</template>
+
+</behaviourtemplates>

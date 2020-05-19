@@ -1,0 +1,20 @@
+<bml id="sp1"  xmlns="http://www.bml-initiative.org/bml/bml-1.0" characterId="COUCH_F_1">
+	<speech start="0"  id = "speech1">
+	  <text>Hello there!</text>
+	</speech>	
+</bml>
+<bml id="sp2"  xmlns="http://www.bml-initiative.org/bml/bml-1.0" characterId="COUCH_M_1">
+	<speech start="sp1:speech1:end"  id = "speech1">
+	  <text>Hello there!</text>
+	</speech>	
+</bml>
+<bml id="sp3"  xmlns="http://www.bml-initiative.org/bml/bml-1.0" characterId="COUCH_M_2">
+	<speech start="sp2:speech1:end"  id = "speech1">
+	  <text>Hello there!</text>
+	</speech>	
+</bml>
+<bml id="sp4"  xmlns="http://www.bml-initiative.org/bml/bml-1.0" characterId="COUCH_M_Android_1">
+	<speech start="sp3:speech1:end"    id = "speech1">
+	  <text>Hello there!</text>
+	</speech>	
+</bml>

@@ -1,0 +1,127 @@
+
+<behaviourtemplates>
+<is name="topic">
+{
+	"initialized": false,
+	"requestNewTopic": true,
+	"topicRequestSent": false,
+	"topicReceived":false,
+	"topicStatus":"NONE",
+	"topicParams":{}
+}
+</is>
+<javascript><![CDATA[
+var TOPIC = (function() {
+
+	var initialize = function() {
+		ENV.register("init_topic", handleNewTopic);
+		ENV.register("topic_status", handleTopicStatus);
+		return true;
+	}
+	
+	var initTopicRequests = [];
+	var topicStatusUpdates = [];
+	
+	var havePendingTopic = function() {
+		return initTopicRequests.length > 0;
+	}
+	
+	var getPendingTopic = function() {
+		return initTopicRequests.shift();
+	}
+	
+	var handleNewTopic = function(response) {
+		//check if there is actually something remotely meaningful in the response body
+		if(response.params.response.cmd === "new"){
+			initTopicRequests.push(response.params.response);
+		}
+	}
+	
+	var handleTopicStatus = function(response) {
+		topicStatusUpdates.push(response.params.status);
+	}
+	
+	var havePendingTopicStatus = function() {
+		return topicStatusUpdates.length > 0;
+	}
+	
+	var getPendingTopicStatus = function() {
+		return topicStatusUpdates.shift();
+	}
+	
+    return {
+    	initialize: initialize,
+    	havePendingTopic: havePendingTopic,
+    	getPendingTopic: getPendingTopic,
+    	havePendingTopicStatus: havePendingTopicStatus,
+    	getPendingTopicStatus: getPendingTopicStatus,
+    	isInitialized: function() {
+    		return is.topic.initialized;
+    	}
+    };
+})();
+]]></javascript>
+
+<template id="topic000" name="Setup CCE"> 
+	<preconditions>
+		<condition><![CDATA[ ENV.isInitialized() ]]></condition>
+		<condition><![CDATA[!is.topic.initialized]]></condition>
+	</preconditions>
+	<effects>
+		<assign is="is.topic.initialized">TOPIC.initialize()</assign>
+	</effects>
+</template>
+
+<template id="topic001" name="Request new topic"> 
+	<preconditions>
+		<condition><![CDATA[ ENV.isInitialized() ]]></condition>
+		<condition><![CDATA[ TOPIC.isInitialized() ]]></condition>
+		<condition><![CDATA[ is.topic.requestNewTopic ]]></condition>
+		<condition><![CDATA[ !is.topic.topicRequestSent ]]></condition>
+	</preconditions>
+	<effects>
+		<assign is="is.topic.lastTopicRequestId">ENV.queueMessage("cce", "get-new-topic")</assign>
+		<assign is="is.topic.requestNewTopic">false</assign>
+		<assign is="is.topic.topicRequestSent">true</assign>
+		<assign is="is.topic.topicReceived">false</assign>
+	</effects>
+</template>
+
+<template id="topic002" name="Initiate new topic"> 
+	<preconditions>
+		<condition><![CDATA[ ENV.isInitialized() ]]></condition>
+		<condition><![CDATA[ TOPIC.isInitialized() ]]></condition>
+		<condition><![CDATA[ TOPIC.havePendingTopic() ]]></condition>
+	</preconditions>
+	<effects>
+		<assign is="is.topic.topicParams">TOPIC.getPendingTopic()</assign>
+		<assign is="is.topic.topicReceived">true</assign>
+		<assign is="is.topic.topicRequestSent">false</assign>
+	</effects>
+</template>
+
+<template id="topic003" name="Topic status update"> 
+	<preconditions>
+		<condition><![CDATA[ ENV.isInitialized() ]]></condition>
+		<condition><![CDATA[ TOPIC.isInitialized() ]]></condition>
+		<condition><![CDATA[ TOPIC.havePendingTopicStatus() ]]></condition>
+	</preconditions>
+	<effects>
+		<assign is="is.topic.topicStatus">TOPIC.getPendingTopicStatus()</assign>
+	</effects>
+</template>
+
+<template id="topic004" name="Topic terminated"> 
+	<preconditions>
+		<condition><![CDATA[ ENV.isInitialized() ]]></condition>
+		<condition><![CDATA[ TOPIC.isInitialized() ]]></condition>
+		<condition><![CDATA[ is.topic.topicStatus === "TERMINATED" ]]></condition>
+	</preconditions>
+	<effects>
+		<assign is="is.topic.topicStatus">"NONE"</assign>
+		<assign is="is.topic.requestNewTopic">true</assign>
+	</effects>
+</template>
+
+
+</behaviourtemplates>

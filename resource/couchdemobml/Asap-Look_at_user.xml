@@ -1,0 +1,10 @@
+<bml id="g1"  xmlns="http://www.bml-initiative.org/bml/bml-1.0" characterId="COUCH_M_1">
+<gazeShift id="gaze1" influence="NECK" target="head_COUCH_USER" start="0" end="0.35"/>
+</bml>
+<bml id="g2"  xmlns="http://www.bml-initiative.org/bml/bml-1.0" characterId="COUCH_M_2">
+<gazeShift id="gaze1" influence="NECK" target="head_COUCH_USER" start="0" end="0.35"/>
+</bml>
+<bml id="g3"  xmlns="http://www.bml-initiative.org/bml/bml-1.0" characterId="COUCH_F_1">
+<gazeShift id="gaze1" influence="NECK" target="head_COUCH_USER" start="0" end="0.35"/>
+</bml>
+

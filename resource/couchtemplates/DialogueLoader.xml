@@ -1,0 +1,252 @@
+<!--
+Dialogue Loader for BORG Experiment
+
+ICT Open demo:
+
+
+"dialogueSpec": {
+		"topicParams": { "topic":"YarnICTOpenDemo2", "username": "User" },
+		"dialogueActors" : [
+			{ "bml_name":"COUCH_M_1", "engine":"ASAP", "role":"Mark",    "identifier":"COUCH_M_1", "dialogueActorClass":"UIControllableActor", "priority": 0.0 },
+			{ "bml_name":"COUCH_F_1", "engine":"ASAP", "role":"Sara",    "identifier":"COUCH_F_1", "dialogueActorClass":"UIControllableActor", "priority": 0.5 },
+			{ "bml_name":"COUCH_M_2", "engine":"ASAP", "role":"Ben",     "identifier":"COUCH_M_2", "dialogueActorClass":"UIControllableActor", "priority": 0.5 },
+			{ "bml_name":"",		  "engine":"ASAP", "role":"User",    "identifier":"User",		"dialogueActorClass":"UIControllableActor", "priority": 1.0 }
+		]
+	},
+	"uidefaults": {
+		"actors": [{ "identifier":"User", "controlledBy": ["unityTest", "tablet"] }]
+	},
+    
+ICT Open demo with greta:
+
+
+"dialogueSpec": {
+		"topicParams": { "topic":"YarnICTOpenDemo2", "username": "User" },
+		"dialogueActors" : [
+			{ "bml_name":"COUCH_M_1", "engine":"ASAP", "role":"Mark",    "identifier":"COUCH_M_1", "dialogueActorClass":"UIControllableActor", "priority": 0.0 },
+			{ "bml_name":"COUCH_F_1", "engine":"greta", "role":"Sara",    "identifier":"COUCH_CAMILLE", "dialogueActorClass":"UIControllableActor", "priority": 0.5 },
+			{ "bml_name":"COUCH_M_2", "engine":"ASAP", "role":"Ben",     "identifier":"COUCH_M_2", "dialogueActorClass":"UIControllableActor", "priority": 0.5 },
+			{ "bml_name":"",		  "engine":"ASAP", "role":"User",    "identifier":"User",		"dialogueActorClass":"UIControllableActor", "priority": 1.0 }
+		]
+	},
+	"uidefaults": {
+		"actors": [{ "identifier":"User", "controlledBy": ["unityTest", "tablet"] }]
+	},
+    
+    
+Gerwins experiment:
+
+"dialogueSpec": {
+		"topicParams": { "topic":"YarnOGE1", "username": "Dummy" },
+		"dialogueActors" : [
+			{ "bml_name":"COUCH_M_1", "engine":"ASAP", "role":"Francois", "identifier":"COUCH_M_1", "dialogueActorClass":"UIControllableActor", "priority": 0.0 },
+			{ "bml_name":"COUCH_F_1", "engine":"ASAP", "role":"Alexa",    "identifier":"COUCH_F_1", "dialogueActorClass":"UIControllableActor", "priority": 0.5 },
+			{ "bml_name":"COUCH_M_2", "engine":"ASAP", "role":"Harm",     "identifier":"COUCH_M_2", "dialogueActorClass":"UIControllableActor", "priority": 0.5 },
+			{ "bml_name":"",		  "engine":"ASAP", "role":"Dummy",    "identifier":"Dummy",		"dialogueActorClass":"UIControllableActor", "priority": 1.0 }
+		]
+	},
+	"uidefaults": {
+		"actors": [{ "identifier":"Dummy", "controlledBy": ["unityTest"] },
+				   { "identifier":"COUCH_M_1", "controlledBy": ["unityTest"] }]
+	},
+
+towards review:
+	"dialogueSpec": {
+		"topicParams": { "topic":"YarnCouchReview1", "username": "User" },
+		"dialogueActors" : [
+			{ "bml_name":"COUCH_M_1",           "engine":"ASAP", "role":"Mark",    "identifier":"COUCH_M_1",        "dialogueActorClass":"UIControllableActor", "priority": 0.0 },
+			{ "bml_name":"COUCH_F_1",           "engine":"ASAP", "role":"Sara",    "identifier":"COUCH_F_1",        "dialogueActorClass":"UIControllableActor", "priority": 0.5 },
+			{ "bml_name":"COUCH_M_2",           "engine":"ASAP", "role":"Ben",     "identifier":"COUCH_M_2",        "dialogueActorClass":"UIControllableActor", "priority": 0.5 },
+            { "bml_name":"COUCH_M_Android_1",   "engine":"ASAP", "role":"Gordon",    "identifier":"COUCH_M_Android_1", "dialogueActorClass":"UIControllableActor", "priority": 0.5 },
+            { "bml_name":"COUCH_CAMILLE",         "engine":"greta", "role":"Camille", "identifier":"COUCH_CAMILLE",      "dialogueActorClass":"UIControllableActor", "priority": 0.5 },
+			{ "bml_name":"",		            "engine":"ASAP", "role":"User",    "identifier":"User",		        "dialogueActorClass":"UIControllableActor", "priority": 1.0 }
+		]
+	},
+	"uidefaults": {
+		"actors": [{ "identifier":"User", "controlledBy": ["unityTest"] }]
+	},
+-->
+<behaviourtemplates>
+<is name="dialogue">
+{
+	"initialized": false,
+	"sentDialogueInit": false,
+	"dialogueInitComplete": false,
+	"lastInitRequestId": "",
+	"dialogueSpec": {
+		"topicParams": { "topic":""},
+			"dialogueActors" : []},
+	"availableActors" : {
+		"Bob": { "bml_name":"", "engine":"ASAP",  "identifier":"User", "dialogueActorClass":"UIControllableActor", "priority": 0.0 },
+		"Francois": { "bml_name":"COUCH_M_2", "engine":"ASAP",  "identifier":"COUCH_M_2", "dialogueActorClass":"UIControllableActor", "priority": 0.5 },
+		"Olivia": { "bml_name":"COUCH_M_1", "engine":"ASAP", "identifier":"COUCH_M_1", "dialogueActorClass":"UIControllableActor", "priority": 0.5 }
+	 },
+	"uidefaults": {
+		"actors": [{ "identifier":"User", "controlledBy": ["unityTest", "tablet"] }]
+	},
+	"initializedDialogueActors": {}
+}
+</is>
+<javascript><![CDATA[
+var DIALOGUE = (function() {
+	
+	var dialogueInitComplete = false;
+	
+	var generateDialogueSpec = function(req) {
+		var ds = is.dialogue.dialogueSpec;
+		ds.dialogueActors = [];
+		for(var i = 0; i < req.participants.length; i++) {
+			var reqActor = req.participants[i];
+			if(is.dialogue.availableActors.hasOwnProperty(reqActor.name)) {
+				print("Selecting actor: "+reqActor.name+" with role: "+reqActor.player);
+				var actor = is.dialogue.availableActors[reqActor.name];
+				actor.player = reqActor.player;
+				actor.name = reqActor.name;
+				ds.dialogueActors.push(actor);
+			} else {
+				print("!!!WARNING!!! No available actor by name "+reqActor.name);
+			}
+		}
+		
+		print("Requested DGEP topic: "+req.topic);
+		
+		//TODO: this is now a hardcoded selection of the topic file, Tessa should update her JSON to select the correct file
+		ds.topicParams.topic = req.topic;
+		//ds.topicParams.topic = "GoalSetting";
+		
+		//ds.topicParams.topic = "IntroExample";
+		//for the freetext input: {"cmd":"new","params":{"topic":"IntroExample","participants":[{"name":"xxx","player":"Agent"},{"name":"yyy","player":"User"}],"utteranceParams":{"xxx":{"personality":"authoritative"}},"authToken":"xyz"}}
+		
+		print("Loading DGEP topic: "+ds.topicParams.topic);
+		
+		//just pass these on as-is, we don't really do anything with them (yet)
+		ds.utteranceParams = req.utteranceParams;
+		
+		print("DialogueSpec: "+JSON.stringify(ds));
+		
+		return ds;
+	}
+	
+	var getEmbodiedAgentNames = function() {
+		if (_.isEmpty(is.dialogue.initializedDialogueActors)) return [];
+		var res = [];
+		for (var i = 0; i < is.dialogue.initializedDialogueActors.length; i++) {
+			var actor_bml_name = is.dialogue.initializedDialogueActors[i].bml_name;
+			if (actor_bml_name != null && actor_bml_name.length > 0) {
+				res.push(actor_bml_name);
+			}
+		}
+		return res;
+	}
+    	
+	var initBMLActors = function() {
+		var bml_names = getEmbodiedAgentNames();
+		
+		for (var i = 0; i < bml_names.length; i++) {
+			resetAgent(bml_names[i]);
+		}
+		
+		for (var i = 0; i < bml_names.length; i++) {
+			initAgent(bml_names[i]);
+		}
+	}
+	
+	var resetAgent = function(bmlId) {
+		var resetPlan = new PLN.PlanTree({ 
+			engine: "ASAP",
+			charId: bmlId
+		});
+		resetPlan.Block({ id: "RESET", composition: "REPLACE" });
+		var res = resetPlan.Finalize();
+		ENV.queueMessage("bml", "send_bml", { bml: res.bml });
+	}
+	
+	var initAgent = function(bmlId) {
+		var initPlan = new PLN.PlanTree({ 
+			engine: "ASAP",
+			charId: bmlId
+		});
+		initPlan
+			.Block({ id: "INIT_SPEEC", composition: "MERGE" })
+				.Speech({ start: "0" }, { text: "Hi" })
+			.Block({ id: "INIT_POSE", composition: "MERGE" })
+				.PostureShift({ start: "0", end: "0.5" }, { stance: "SITTING", part: "WHOLEBODY", lexeme: "DEFAULT" });
+		var res = initPlan.Finalize();
+		ENV.queueMessage("bml", "send_bml", { bml: res.bml });
+	}
+	
+	var handleDialogueResponse = function(req) {
+		if (is.dialogue.lastInitRequestId == req.msgId) {
+			if (req.params.response == "loadedActors") {
+				is.dialogue.initializedDialogueActors = req.params.actors;
+				print("ACTORS INITIALIZED: "+JSON.stringify(is.dialogue.initializedDialogueActors, null, 2));
+				initBMLActors();
+			} else {
+				print("DIALOGUE: unknown response: "+req.msgId.params.response);
+			}
+			is.dialogue.dialogueInitComplete = true;
+		} else {
+			print("DIALOGUE: got response to older message request. Ignored.");
+		}
+	}
+	
+	var initialize = function() {
+		PLN.Init();
+		ENV.register("init_dialogue", handleDialogueResponse);
+		return true;
+	}
+	
+    return {
+    	initialize: initialize,
+    	getEmbodiedAgentNames: getEmbodiedAgentNames,
+    	generateDialogueSpec: generateDialogueSpec,
+    	isInitialized: function() {
+    		return is.dialogue.initialized;
+    	}
+    };
+})();
+]]></javascript>
+
+<template id="dialogue000" name="Setup DialogueLoader"> 
+	<preconditions>
+		<condition><![CDATA[ ENV.isInitialized() ]]></condition>
+		<condition><![CDATA[!is.dialogue.initialized]]></condition>
+	</preconditions>
+	<effects>
+		<assign is="is.dialogue.initialized">DIALOGUE.initialize()</assign>
+	</effects>
+</template>
+
+<template id="dialogue100" name="Inititialize Dialogue"> 
+	<preconditions>
+		<condition><![CDATA[ ENV.isInitialized() ]]></condition>
+		<condition><![CDATA[ DIALOGUE.isInitialized() ]]></condition>
+		<condition><![CDATA[ TOPIC.isInitialized() ]]></condition>
+		<condition><![CDATA[ is.topic.topicReceived ]]></condition>
+		<condition><![CDATA[ !is.dialogue.sentDialogueInit ]]></condition>
+	</preconditions>
+	<effects>
+		<assign is="is.dialogue.dialogueSpec">DIALOGUE.generateDialogueSpec(is.topic.topicParams)</assign>
+		<assign is="is.dialogue.lastInitRequestId">ENV.queueMessage("dialogueloader", "init_dialogue", is.dialogue.dialogueSpec)</assign>
+		<assign is="is.dialogue.lastUIDefaultsRequestId">ENV.queueMessage("ui", "set_defaults", is.dialogue.uidefaults)</assign>
+		<assign is="is.dialogue.sentDialogueInit">true</assign>
+		<assign is="is.topic.topicReceived">false</assign>
+		<assign is="is.dialogue.dialogueInitComplete">false</assign>
+	</effects>
+</template>
+
+<template id="dialogue101" name="Inititialize Dialogue Completed"> 
+	<preconditions>
+		<condition><![CDATA[ ENV.isInitialized() ]]></condition>
+		<condition><![CDATA[ DIALOGUE.isInitialized() ]]></condition>
+		<condition><![CDATA[ TOPIC.isInitialized() ]]></condition>
+		<condition><![CDATA[ is.dialogue.sentDialogueInit ]]></condition>
+		<condition><![CDATA[ is.dialogue.dialogueInitComplete ]]></condition>
+	</preconditions>
+	<effects>
+		<assign is="is.dialogue.sentDialogueInit">false</assign>
+	</effects>
+</template>
+
+
+</behaviourtemplates>

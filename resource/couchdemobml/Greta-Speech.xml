@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<bml id="gretaspeechbml" xmlns="http://www.bml-initiative.org/bml/bml-1.0" >
+	<speech id = "speech1">
+	  <text>Hello there!</text>
+	</speech>	
+</bml>

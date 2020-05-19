@@ -1,0 +1,221 @@
+<!-- 
+NVBG for BORG experiment
+-->
+<behaviourtemplates>
+<is name="nvbg">{
+	"initialized": false,
+	"new": {}
+}</is>
+
+<!--  -->
+<javascript><![CDATA[
+var NVBG = (function() {
+
+	var initialize = function() {
+		ENV.register("predictionFeedback", handlePredictionFeedback);
+		return true;
+	}
+	
+	var speechBlockQueue = [];
+	
+	var handlePredictionFeedback = function(fb) {
+		var skip = true;
+		var duration = 0;
+		var latency = 0;
+		var now = new Date().getTime();
+		//print("PREDICTION: "+JSON.stringify(fb.params, null, 2));
+		
+		for (var i = 0; i < fb.params.bmlBlockPredictions.length; i++) {
+			if (fb.params.bmlBlockPredictions[i].status == "IN_EXEC") {
+				duration = fb.params.bmlBlockPredictions[i].globalEnd - fb.params.bmlBlockPredictions[i].globalStart;
+				latency = (now - fb.params.bmlBlockPredictions[i].posixStartTime)/1000.0;
+				skip = false;
+			}
+		}
+		
+		if (skip) return;
+		
+		for (var i = 0; i < fb.params.bmlBehaviourPredictions.length; i++) {
+			if (fb.params.bmlBehaviourPredictions[i].behaviourType == "speak") {
+				print(fb.params.characterId + " says " + fb.params.bmlBehaviourPredictions[i].content+ " for "+duration+"s - latency: "+latency+"s");
+				speechBlockQueue.push({
+					duration: duration,
+					content: fb.params.bmlBehaviourPredictions[i].content,
+					characterId: fb.params.characterId
+				});
+				return;
+			}
+		}
+	}
+	
+	var defaultNVBGIntent = function(charId, addressee) {
+		return {
+		    "engine": "ASAP",
+		    "bmlTopic": "ASAP",
+		    "charId": charId,
+		    "intent": {             
+		        "parameters": {
+		            "addressee": addressee
+		        }
+		    }
+		};
+	}
+	
+	var haveNewSpeechPredicted = function() {
+		return speechBlockQueue.length > 0;
+	}
+	
+	var generateListeningBehavior = function() {
+		var sp = speechBlockQueue.shift();
+		print(" GENERATING LISTENING BEHAVIOR FOR "+JSON.stringify(sp));
+		if (sp.duration < 1) {
+			print("too short, skipping");
+			return;
+		}
+		
+		var lexemes = ["SITTING_POSE_2", "O_SURPRISE_1", "O_SURPRISE_2", "R_TWIT_1", "R_TWIT_2", "R_TWIT_3", "R_TWIT_4", "R_TWIT_5", "R_DES_1", "S_DES_1", "O_LAUGH_2", "O_LAUGH_1"];
+		var used_lexemes= [];
+		var allAgentIds = DIALOGUE.getEmbodiedAgentNames();
+		for (var i = 0; i < allAgentIds.length; i++) {
+			var currentChar = allAgentIds[i];
+			if (currentChar == sp.characterId) continue;
+			print("Character "+currentChar+" should show listening behavior between now and "+sp.duration+" seconds.");
+			
+			used_lexemes.unshift(randomLexeme);
+			var randomStart = Math.random()*(sp.duration/2);
+			var randomLexeme = lexemes[Math.floor(Math.random()*lexemes.length)];
+			
+			for (var i = 0; i < used_lexemes.length; i++) {
+				
+				if (randomLexeme!=used_lexemes[i]){
+					var listenGesture = new PLN.PlanTree(defaultNVBGIntent(currentChar, sp.characterId))
+						.Block({ id: "FBA", composition: "MERGE" })
+							.Gesture({ start: randomStart, lexeme: randomLexeme, mode: "BOTH_HANDS" })
+						.Render();
+					ENV.queueMessage("bml", "send_bml", { bml: listenGesture.bml });
+				} else{
+					var randomLexeme = lexemes[Math.floor(Math.random()*lexemes.length)];
+				}
+			}
+		}
+	}
+
+    return {
+        initialize: initialize,
+        haveNewSpeechPredicted: haveNewSpeechPredicted,
+        generateListeningBehavior: generateListeningBehavior
+    };
+})();
+]]></javascript>
+
+<template id="nvbginit" name="nvbginit"> 
+	<preconditions>
+		<condition><![CDATA[ ENV.isInitialized() ]]></condition>
+		<condition><![CDATA[!is.nvbg.initialized]]></condition>
+	</preconditions>
+	<effects>
+		<assign is="is.nvbg.initialized">NVBG.initialize();</assign>
+	</effects>
+</template>
+
+
+<template id="nvbgprocess.001" name="Check for active speech"> 
+	<preconditions>
+		<condition><![CDATA[ is.nvbg.initialized ]]></condition>
+		<condition><![CDATA[ NVBG.haveNewSpeechPredicted() ]]></condition>
+	</preconditions>
+	<effects>
+		<assign is="is.nvbg.null"><![CDATA[ NVBG.generateListeningBehavior(); ]]></assign>
+	</effects>
+</template>
+
+</behaviourtemplates>
+
+<!-- 
+
+<template id="nvbgrule.001" name="Gaze At Addressee" conditional="true"> 
+	<preconditions>
+		<condition><![CDATA[ PLN.CP() != null ]]></condition>
+		<condition><![CDATA[ PLN.CP().HasAddressee()]]></condition>
+		<condition><![CDATA[!PLN.CP().AddresseeIsAll()]]></condition>
+	</preconditions>
+	<effects>
+		<assign is="is.nvbg.null"><![CDATA[
+			PLN.CP().Block({ id: "ADDRGAZE", composition: "MERGE" })
+				.GazeShift({
+					id:   	"gs1",
+					start: 	PLN.CP().FirstRefOr("speech", ":start",      "0"),
+					end:   	PLN.CP().FirstRefOr("speech", ":start+0.75", "0.75"),
+					target: PLN.CP().GetAddresseeTarget() 
+				})
+		]]></assign>
+	</effects>
+</template>
+
+<template id="nvbgrule.002" name="Gaze At Addressee" conditional="true"> 
+	<preconditions>
+		<condition><![CDATA[ PLN.CP() != null ]]></condition>
+		<condition><![CDATA[ PLN.CP().HasAddressee() ]]></condition>
+		<condition><![CDATA[ PLN.CP().AddresseeIsAll() ]]></condition>
+	</preconditions>
+	<effects>
+		<assign is="is.nvbg.null"><![CDATA[
+			PLN.CP().Block({ id: "ADDRGAZE", composition: "MERGE" })
+				.GazeShift({
+					id:   	"gs1",
+					start: 	PLN.CP().FirstRefOr("speech", ":start+0.1",      "0"),
+					end:   	PLN.CP().FirstRefOr("speech", ":start+0.75", "0.75"),
+					target: "camera"
+				})
+				.GazeShift({
+					id:   	"gs2",
+					start: 	"gs1:end+0.25",
+					end:   	"gs1:end+3.25",
+					target: "camera",
+					offsetAngle: "45",
+					offsetDirection: "LEFT"
+				})
+		]]></assign>
+	</effects>
+</template>
+
+
+
+
+		
+	<assign is="is.nvbg.test"><![CDATA[
+	new PLN.PlanTree(TestIntent())
+		.Block({ id: "SPEECH", composition: "MERGE" })
+			.Speech({ id: "s1",		start: "1" }, 
+					{ text: "Look who we have  {{ Sync 'snc1' }} here, <silence msec=\"1000\"/> {{ Sync 'snc2' }} our first participant." })
+		.Block({ id: "B1", composition: "MERGE" })
+			.GazeShift({ id: "gs1",	start:"SPEECH:s1:start", end:"SPEECH:s1:snc1", target:"head_COUCH_F_1" })
+			.FaceLexeme({ id: "f1",	start:"SPEECH:s1:snc1", end:"SPEECH:s1:end",	lexeme:"expectingbrows" })
+		.Block({ id: "B2", composition: "MERGE" })
+			.GazeShift({ id: "gs1",	start:"SPEECH:s1:snc1+0.2", end:"SPEECH:s1:snc2", target:"camera" })
+			.FaceLexeme({ id: "f1",	start:"SPEECH:s1:end", end:"SPEECH:s1:end+2", lexeme:"smilemouth" })
+	.Finalize();
+	]]></assign>
+	<assign is="is.nvbg.test"><![CDATA[
+		addIntentRequest(is.nvbg.test);
+	]]></assign>
+		
+		
+	new PLN.PlanTree(TestIntent())
+	.Block({ id: "A", composition: "MERGE" })
+		.Speech({ id: "s1",		start: "3" }, 
+				{ text: "I can talk multiple speech blocks." })
+	.Block({ id: "B", composition: "MERGE" })
+		.Speech({ id: "s1",		start:"A:s1:end+0.5" },
+				{ text: "The second speech block has already started. {{ Sync 'qstart' }} Isn't that nice?" })
+	.Block({ id: "C", composition: "MERGE" })
+		.Gesture({ id: "g1",	start:"A:s1:start-0.5", stroke:"A:s1:start", lexeme:"greta_deictic_self" })
+	.Block({ id: "D", composition: "MERGE" })
+		.GazeShift({ id: "gs1",	start:"A:s1:start-0.5", end:"A:s1:start", target:"head_COUCH_F_1" })
+	.Block({ id: "E", composition: "MERGE" })
+		.GazeShift({ id: "gs1",	start:"B:s1:start-0.5", end:"B:s1:start", target:"camera" })
+	.Block({ id: "F", composition: "MERGE" })
+		.FaceLexeme({ id: "f2", start:"B:s1:qstart", end:"B:s1:end+0.5", lexeme:"questioning" })
+	.Finalize();
+
+-->

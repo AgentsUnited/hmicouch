@@ -1,0 +1,72 @@
+ <!-- 
+social saliency gaze. Mostly initialises some stuff, then sends "update saliency " requests to SSE every now and then
+-->
+<behaviourtemplates>
+<is name="sse">{
+	"initialized": false, 
+	"settings": {
+		"updateSpeed":10000
+	}
+}</is>
+<javascript><![CDATA[
+var SSE = (function() {
+	function Init() {
+		return true;
+		//to register for certain message to be handled by certain function:
+		//ENV.register("predictionFeedback", handlePredictionFeedback);
+	}
+	
+	var lastCheck = 0;
+	
+	function getMillisecsSinceLastSaliencyCheck()
+	{
+		var d = new Date();
+		now = d.getTime();
+		return now - lastCheck;
+	}
+	function setSaliencyChecked()
+	{
+		var d = new Date();
+		lastCheck = d.getTime();
+		return true;
+	}
+	
+    return {
+        Init: Init,
+		getMillisecsSinceLastSaliencyCheck : getMillisecsSinceLastSaliencyCheck,
+		setSaliencyChecked : setSaliencyChecked
+    };
+})();
+]]></javascript>
+
+<template id="sseinit" name="sseinit"> 
+	<preconditions>
+		<condition><![CDATA[ ENV.isInitialized() ]]></condition>
+		<condition><![CDATA[!is.sse.initialized]]></condition>
+	</preconditions>
+	<effects>
+		<assign is="is.sse.initialized">SSE.Init();</assign>
+		<assign is="is.sse.dummy">ENV.queueMessage("sse", "setMsecPerUpdate", {msecPerUpdate: is.sse.settings.updateSpeed})</assign>
+		<assign is="is.sse.dummy">ENV.queueMessage("sse", "initNewCharacter", {charId: "COUCH_M_1",engine:"ASAP"})</assign>
+		<assign is="is.sse.dummy">ENV.queueMessage("sse", "initNewCharacter", {charId: "COUCH_F_1",engine:"ASAP"})</assign>
+		<assign is="is.sse.dummy">ENV.queueMessage("sse", "initNewCharacter", {charId: "COUCH_M_2",engine:"ASAP"})</assign>
+		<assign is="is.sse.dummy">ENV.queueMessage("sse", "initNewCharacter", {charId: "COUCH_CAMILLE",engine:"GRETA"})</assign>
+		<!-- TODO: Initialize possible java helper objects, etc. -->
+	</effects>
+</template>
+
+
+<template id="sse001" name="UpdateSaliency">
+  <preconditions>
+	<condition><![CDATA[ is.sse.initialized]]></condition>
+	<condition><![CDATA[ SSE.getMillisecsSinceLastSaliencyCheck() > is.sse.settings.updateSpeed ]]></condition>
+  </preconditions>
+  <effects>
+	  <!-- ask environment to update saliency -->
+	  <assign is="is.sse.dummy">ENV.queueMessage("sse", "updateSaliency",{})</assign>
+	  <assign is="is.sse.dummy">SSE.setSaliencyChecked()</assign>
+  </effects>
+</template>
+
+
+</behaviourtemplates>

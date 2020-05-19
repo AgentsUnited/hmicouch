@@ -1,0 +1,46 @@
+<bml id="bml_start1" xmlns:bmlt="http://hmi.ewi.utwente.nl/bmlt" xmlns="http://www.bml-initiative.org/bml/bml-1.0" characterId="COUCH_M_1">
+
+    <postureShift id="ps1" start="0" end="0.5">
+        <stance type="SITTING"/> 
+        <pose part="WHOLEBODY" lexeme="DEFAULT"/>
+    </postureShift>	
+	
+	<bmlt:blinkemitter id="blinkemitter1" range="0.5" avgwaitingtime="5"/>
+
+	<gazeShift id="gaze1" influence="NECK" target="head_COUCH_USER" start="0.7" end="1.3"/>
+	
+</bml>
+
+<bml id="bml_start2" xmlns:bmlt="http://hmi.ewi.utwente.nl/bmlt" xmlns="http://www.bml-initiative.org/bml/bml-1.0" characterId="COUCH_M_2">
+
+    <postureShift id="ps1" start="0" end="0.5">
+        <stance type="SITTING"/> 
+        <pose part="WHOLEBODY" lexeme="DEFAULT"/>
+    </postureShift>	
+	
+	<bmlt:blinkemitter id="blinkemitter1" range="0.5" avgwaitingtime="7"/>
+
+	<gazeShift id="gaze1" influence="NECK" target="head_COUCH_USER" start="0.7" end="1.3"/>
+	
+</bml>
+
+<bml id="bml_start3"  xmlns:bmlt="http://hmi.ewi.utwente.nl/bmlt" xmlns="http://www.bml-initiative.org/bml/bml-1.0" characterId="COUCH_F_1">
+
+    <postureShift id="ps1" start="0" end="0.5">
+        <stance type="SITTING"/> 
+        <pose part="WHOLEBODY" lexeme="DEFAULT"/>
+    </postureShift>	
+	
+	<bmlt:blinkemitter id="blinkemitter1" range="0.5" avgwaitingtime="8"/>
+
+	<gazeShift id="gaze1" influence="NECK" target="head_COUCH_USER" start="0.7" end="1.3"/>
+	
+</bml>
+
+
+<bml id="bml_start4"  xmlns:bmlt="http://hmi.ewi.utwente.nl/bmlt" xmlns="http://www.bml-initiative.org/bml/bml-1.0" characterId="COUCH_M_Android_1">
+	
+	<bmlt:blinkemitter id="blinkemitter1" range="0.5" avgwaitingtime="8"/>
+	
+</bml>
+

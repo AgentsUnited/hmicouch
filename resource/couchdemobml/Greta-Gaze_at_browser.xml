@@ -1,0 +1,4 @@
+<bml xmlns="http://www.bml-initiative.org/bml/bml-1.0" >
+
+    <gazeShift id="gaze4" influence="" target="BrowserGazeTarget" start="1" end="2" />
+</bml>

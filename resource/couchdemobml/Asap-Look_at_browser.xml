@@ -1,0 +1,16 @@
+<bml id="fds"  xmlns="http://www.bml-initiative.org/bml/bml-1.0" characterId="COUCH_M_2">
+
+    <speech id = "speech1">
+        <text>
+        See look at this browser <sync id="s1"/>here!
+        </text>
+	</speech>	
+
+    <pointing id="point1" target="BrowserGazeTarget" 
+              mode="LEFT_HAND"  start="speech1:s1-1" 
+              stroke="speech1:s1" end="speech1:s1+2"/>
+    
+    <gazeShift id="gaze1" target="BrowserGazeTarget" influence="NECK"  
+          start="speech1:start" end="speech1:start+1"/>    
+
+</bml>

@@ -1,0 +1,6 @@
+<bml id="g1"  xmlns="http://www.bml-initiative.org/bml/bml-1.0" characterId="COUCH_M_1">
+<gaze id="gaze1" influence="SHOULDER" target="head_COUCH_USER" start="0" end="100"/>
+</bml>
+<bml id="g2"  xmlns="http://www.bml-initiative.org/bml/bml-1.0" characterId="COUCH_M_2">
+<gaze id="gaze1" influence="SHOULDER" target="head_COUCH_USER" start="0" end="100"/>
+</bml>

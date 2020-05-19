@@ -1,0 +1,21 @@
+<bml id="bml_pose1"  xmlns="http://www.bml-initiative.org/bml/bml-1.0" characterId="COUCH_M_1">
+    <postureShift id="ps1" start="0" end="0.5">
+        <stance type="SITTING"/> 
+        <pose part="WHOLEBODY" lexeme="DEFAULT"/>
+    </postureShift>	
+</bml>
+
+<bml id="bml_pose2"  xmlns="http://www.bml-initiative.org/bml/bml-1.0" characterId="COUCH_M_2">
+    <postureShift id="ps1" start="0" end="0.5">
+        <stance type="SITTING"/> 
+        <pose part="WHOLEBODY" lexeme="DEFAULT"/>
+    </postureShift>	
+</bml>
+
+<bml id="bml_pose3"  xmlns="http://www.bml-initiative.org/bml/bml-1.0" characterId="COUCH_F_1">
+    <postureShift id="ps1" start="0" end="0.5">
+        <stance type="SITTING"/> 
+        <pose part="WHOLEBODY" lexeme="DEFAULT"/>
+    </postureShift>	
+</bml>
+

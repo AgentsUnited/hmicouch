@@ -1,0 +1,9 @@
+{
+	"instance": "ASAP COUCH",
+	"agents": [
+		{ "charId": "COUCH_M_1",         "spec": "multiAgentSpecs/uma/UMA1.xml" },
+		{ "charId": "COUCH_F_1",         "spec": "multiAgentSpecs/uma/UMA2.xml" },
+		{ "charId": "COUCH_M_2",         "spec": "multiAgentSpecs/uma/UMA3.xml" },
+        { "charId": "COUCH_M_Android_1", "spec": "multiAgentSpecs/uma/UMA1.xml" }
+	]
+}

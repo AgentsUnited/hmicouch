@@ -1,0 +1,10 @@
+<bml id="handshake1" xmlns="http://www.bml-initiative.org/bml/bml-1.0" characterId="COUCH_M_2">
+ <pointing id="behavior1" target="r_hand_COUCH_F_1" mode="LEFT_HAND" start="0" end="5"/> 
+ <gazeShift id="g1" target="r_hand_COUCH_F_1" influence="NECK" start="handshake2:behavior1:start" end="handshake2:behavior1:start+0.5"/>
+ <gazeShift id="g2" target="head_COUCH_F_1" influence="NECK" start="handshake1:behavior1:start+2" end="handshake1:behavior1:start+2.5"/>
+</bml>
+<bml id="handshake2" xmlns="http://www.bml-initiative.org/bml/bml-1.0" characterId="COUCH_F_1">
+ <pointing id="behavior1" target="l_hand_COUCH_M_2" mode="RIGHT_HAND" start="handshake1:behavior1:start+0.5" end="handshake1:behavior1:end-0.5"/> 
+ <gazeShift id="g1" target="l_hand_COUCH_M_2" influence="NECK" start="handshake1:behavior1:start" end="handshake1:behavior1:start+0.5"/>
+ <gazeShift id="g2" target="head_COUCH_M_2" influence="NECK" start="handshake1:behavior1:start+2" end="handshake1:behavior1:start+2.5"/>
+</bml>
