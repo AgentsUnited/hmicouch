@@ -27,6 +27,8 @@ public class UIControllableActor extends DialogueActor implements IFloorStatusLi
 
 	private UIEnvironment uiMiddleware;
 	private FilteredMoveSet[] currentMoveSets;
+
+	private DelayedMovePlanner dmp;
 	
 	public UIControllableActor(Actor dgepActor, IFloorManager fm, IMoveDistributor md, IMoveSelector ms, IIntentPlanner mp, IMoveCollector mc, UIEnvironment uim) {
 		super(dgepActor, fm, md, ms, mp, mc);
@@ -38,6 +40,11 @@ public class UIControllableActor extends DialogueActor implements IFloorStatusLi
 	public synchronized void UIMoveSelected(Move move) {
 		logger.info("{} selected move through UI: {}", this.getIdentifier(), move.moveID);
 		floorManager.registerMove(this, this, move, MoveSelectionType.FINAL);
+		
+		//cancel any delayed moves that may have been scheduled for this actor
+		if(dmp != null) {
+			dmp.cancel();
+		}
 	}
 	
 	@Override
@@ -81,7 +88,7 @@ public class UIControllableActor extends DialogueActor implements IFloorStatusLi
 	}
 	
 	private void delayedPlanMove(Move move, int delay) {
-		DelayedMovePlanner dmp = new DelayedMovePlanner(this, move, delay);
+		dmp = new DelayedMovePlanner(this, move, delay);
         Thread t = new Thread(dmp);
         t.start();
 	}
@@ -127,7 +134,6 @@ public class UIControllableActor extends DialogueActor implements IFloorStatusLi
 	public void onFloorStatusChange(FloorStatus fs) {
 		logger.trace("Actor {} has just found out that the floor is now {}", this.bml_name, fs.toString());
 		// TODO: we could do something smart here, like re-plan when the floor becomes free again and other move was not fully completed or something
-		
 	}
 
 	@Override
@@ -147,6 +153,7 @@ class DelayedMovePlanner implements Runnable {
     private Move move;
     private UIControllableActor actor;
 	private int delay;
+	private boolean cancelled = false;
 
     public DelayedMovePlanner(UIControllableActor actor, Move move, int delay) {
         this.move = move;
@@ -154,12 +161,18 @@ class DelayedMovePlanner implements Runnable {
         this.delay = delay;
     }
 
+    public void cancel() {
+    	this.cancelled = true;
+    }
+    
     public void run() {
     	try {
 			Thread.sleep(delay+UIControllableActor.RANDOM.nextInt(100));
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		actor.delayedPlanMoveCompleted(move);
+    	if(!cancelled) {
+    		actor.delayedPlanMoveCompleted(move);
+    	}
     }
 }
