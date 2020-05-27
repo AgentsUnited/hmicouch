@@ -104,14 +104,34 @@ public class RandomFloorManager implements IFloorManager, IMoveListener {
 		boolean allUserMovesFinal = false;
 		if(floorRequests.size() == moveSets.length) {
 			allUserMovesFinal = true;
-			for(FloorRequest fr : floorRequests.values()) {
-				if(fr.type != MoveSelectionType.FINAL && uie.isActorControlled(fr.actor.identifier)) {
+			for(FloorRequest fr : getAllUserMoves().values()) {
+				if(fr.type != MoveSelectionType.FINAL) {
 					allUserMovesFinal = false;
 					break;
 				}
 			}
 		}
 		return allUserMovesFinal;
+	}
+
+	private Map<String, FloorRequest> getAllUserMoves(){
+		Map<String, FloorRequest> userMoves = new HashMap<String, FloorRequest>();
+		for(FloorRequest fr : floorRequests.values()) {
+			if(uie.isActorControlled(fr.actor.identifier)) {
+				userMoves.put(fr.actor.identifier, fr);
+			}
+		}
+		return userMoves;
+	}
+
+	private Map<String, FloorRequest> getAllUserMovesOfType(MoveSelectionType type){
+		Map<String, FloorRequest> userMoves = new HashMap<String, FloorRequest>();
+		for(FloorRequest fr : getAllUserMoves().values()) {
+			if(fr.type == type) {
+				userMoves.put(fr.actor.identifier, fr);
+			}
+		}
+		return userMoves;
 	}
 
 	@Override
@@ -209,8 +229,15 @@ public class RandomFloorManager implements IFloorManager, IMoveListener {
         			scheduleActorSelectionTask(CHECK_INTERVAL);
         			return;
         		}
-        		//TODO: should human-controlled actors get precedence over autonomous actors?
         		FloorRequest[] frs = floorRequests.values().toArray(new FloorRequest[] {});
+        		
+        		//if the user has selected a final move, give it priority
+        		Map<String, FloorRequest> finalUserMoves = getAllUserMovesOfType(MoveSelectionType.FINAL);
+        		if(finalUserMoves.size() > 0) {
+        			frs = finalUserMoves.values().toArray(new FloorRequest[] {});
+        			logger.debug("There are move(s) selected by a user, ignoring the auto-selected moves");
+        		}
+        		
         		FloorRequest fr = frs[rand.nextInt(frs.length)];
 	        	logger.debug("I have randomly randomly selected actor {} to take the floor", fr.actor.identifier);
 	    		currentActorOnFloor = fr.actor;
