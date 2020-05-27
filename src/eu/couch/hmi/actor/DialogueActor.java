@@ -52,4 +52,10 @@ public abstract class DialogueActor extends Actor implements IMoveListener {
 		return this.moveSelector;
 	}
 	
+	/**
+	 * Disables this actor instance, so it will not respond to new moves etc.
+	 * TODO: right now, implementing classes just ignore any future moves that come their way, but the instance of the actor still hangs around in various listener queues (this is a memory leak). Nicer would be to de-register each instance with the various places where it is used
+	 */
+	public abstract void disableActor();
+	
 }

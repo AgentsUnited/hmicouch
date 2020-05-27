@@ -29,6 +29,8 @@ public class UIControllableActor extends DialogueActor implements IFloorStatusLi
 	private FilteredMoveSet[] currentMoveSets;
 
 	private DelayedMovePlanner dmp;
+
+	private boolean isActive = true;
 	
 	public UIControllableActor(Actor dgepActor, IFloorManager fm, IMoveDistributor md, IMoveSelector ms, IIntentPlanner mp, IMoveCollector mc, UIEnvironment uim) {
 		super(dgepActor, fm, md, ms, mp, mc);
@@ -38,6 +40,7 @@ public class UIControllableActor extends DialogueActor implements IFloorStatusLi
 	}
 
 	public synchronized void UIMoveSelected(Move move) {
+		if(!isActive) return;
 		logger.info("{} selected move through UI: {}", this.getIdentifier(), move.moveID);
 		floorManager.registerMove(this, this, move, MoveSelectionType.FINAL);
 		
@@ -49,6 +52,7 @@ public class UIControllableActor extends DialogueActor implements IFloorStatusLi
 	
 	@Override
 	public synchronized void onNewMoves(FilteredMoveSet[] moveSets) {
+		if(!isActive) return;
 		currentMoveSets = moveSets;
 		// Select default/fallback move
 		this.moveSelector.selectMove(this, moveSets);
@@ -56,6 +60,7 @@ public class UIControllableActor extends DialogueActor implements IFloorStatusLi
 	
 	@Override
 	public synchronized void onMoveSelected(Move move) {
+		if(!isActive) return;
 		uiMiddleware.updateMoveStatus(this, move, "SELECTED");
 		logger.info(this.getIdentifier()+" selected (fallback) move: "+move.moveID);
 		
@@ -77,6 +82,7 @@ public class UIControllableActor extends DialogueActor implements IFloorStatusLi
 	}
 	
 	private boolean isValidMove(Move move) {
+		if(!isActive) return false;
 		boolean res = false;
 		for (FilteredMoveSet moveSet : currentMoveSets) {
 			if (!moveSet.actorIdentifier.equals(this.getIdentifier())) continue;
@@ -121,6 +127,7 @@ public class UIControllableActor extends DialogueActor implements IFloorStatusLi
 	
 	@Override
 	public void onMoveStatus(Move move, MoveStatus status) {
+		if(!isActive) return;
 		// show UI clients when the move is completed...
 		uiMiddleware.updateMoveStatus(this, move, status.name());
 		if (status == MoveStatus.MOVE_COMPLETED) {
@@ -132,17 +139,24 @@ public class UIControllableActor extends DialogueActor implements IFloorStatusLi
 	
 	@Override
 	public void onFloorStatusChange(FloorStatus fs) {
+		if(!isActive) return;
 		logger.trace("Actor {} has just found out that the floor is now {}", this.bml_name, fs.toString());
 		// TODO: we could do something smart here, like re-plan when the floor becomes free again and other move was not fully completed or something
 	}
 
 	@Override
 	public void floorGranted(Move move) {
+		if(!isActive) return;
 		if (isValidMove(move)) {
 			intentPlanner.planIntent(this, new MoveIntent(this, move));
 		} else {
 			logger.warn("The move for which actor {} has been granted the floor is no longer valid: {} - {}", new String[] {this.bml_name, move.moveID, move.opener});
 		}
+	}
+
+	@Override
+	public void disableActor() {
+		this.isActive  = false;
 	}
 	
 }

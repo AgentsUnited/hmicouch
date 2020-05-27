@@ -154,7 +154,7 @@ Environment for BORG Experiment
 							"oTopic": "COUCH/GBM/REQUEST"
 						}
 					},
-					"style":"FCFS"
+					"style":"RANDOM"
 				}
 			}, {
 				"id":"dialogueloader", "loader":"eu.couch.hmi.environments.DialogueLoaderEnvironment",

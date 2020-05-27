@@ -116,7 +116,9 @@ public class DialogueLoaderEnvironment extends BaseFlipperEnvironment implements
 	 * 		 initialization of actiors, allowing to specify 
 	 */
 	public JsonNode loadDialogueActors(Actor[] actors) {
-		// TODO: if we (re-)load dialogue actors, we need to uninitialize them first (unregister listeners etc)?
+		for(DialogueActor da : dialogueActors) {
+			da.disableActor();
+		}
 		this.dialogueActors.clear();
 		
 		UIEnvironment uie = null;

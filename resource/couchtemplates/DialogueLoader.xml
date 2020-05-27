@@ -82,7 +82,7 @@ towards review:
 		"Olivia": { "bml_name":"COUCH_M_1", "engine":"ASAP", "identifier":"COUCH_M_1", "dialogueActorClass":"UIControllableActor", "priority": 0.5 }
 	 },
 	"uidefaults": {
-		"actors": [{ "identifier":"User", "controlledBy": ["unityTest", "tablet"] }]
+		"actors": [{ "identifier":"User", "controlledBy": ["unityTest"] }]
 	},
 	"initializedDialogueActors": {}
 }
