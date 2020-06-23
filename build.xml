@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="HmiCouch"  default="run">
+<project name="IntentPlanner"  default="run">
     <import file="../hmibuild/build.xml" />    
 </project>
