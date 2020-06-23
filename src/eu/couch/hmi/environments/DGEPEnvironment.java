@@ -609,6 +609,9 @@ class ProtocolMovesRequestParams {
 	public int dialogueID;
 	public ParticipantResponse[] participants;
 	
+	//this is a temporary flag to always clear the moves cache until Mark adds functionality internally to the UG for caclulating whether or not to clear the cache
+	public boolean cached = false;
+
 	public ProtocolMovesRequestParams(ProtocolInitResponse p) {
 		this.dialogueID = p.dialogueID;
 		this.participants = p.participants;
