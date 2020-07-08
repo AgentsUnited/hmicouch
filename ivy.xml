@@ -65,6 +65,8 @@
     <dependency org="Asap"	name="AsapHumanoidLoaderDefaults"		rev="latest.${resolve.status}" />
     <dependency org="Asap"	name="BmlScripts"						rev="latest.${resolve.status}" />
 	
+    <dependency org="Asap"	name="AsapAnimationEngine" 				rev="latest.${resolve.status}" />
+    <dependency org="HMI"	name="HmiAnimation"						rev="latest.{$resolve.status}" />
 	
     <!-- MARY VOICES:
     <dependency org="marytts"	name="voice-dfki-prudence"				rev="latest.release" />
@@ -123,7 +125,7 @@
     <dependency org="Asap"	name="AsapEnvironment"					rev="latest.${resolve.status}" />
     <dependency org="Asap"	name="AsapUnityResources" 				rev="latest.${resolve.status}" />
     <dependency org="Asap"	name="AsapBML" 							rev="latest.${resolve.status}" />
-    <dependency org="Asap"	name="AsapAnimationEngine" 				rev="latest.${resolve.status}" />
+    
     <dependency org="Asap"	name="AsapActiveMQRealizerAdapters"		rev="latest.${resolve.status}" />
     <dependency org="Asap"	name="AsapMiddlewareEngine"				rev="latest.${resolve.status}" />     
     <dependency org="Asap"	name="AsapSpeechEngine"					rev="latest.${resolve.status}" />
@@ -131,14 +133,12 @@
     <dependency org="Asap"	name="AsapRealizer"						rev="latest.${resolve.status}" />
     <dependency org="HMI"	name="HmiMiddlewareAudioEnvironment"	rev="latest.${resolve.status}" />
     <dependency org="saiba"	name="openbmlparser" 					rev="latest.release" />
-    <dependency org="HMI"	name="HmiAnimation"						rev="latest.{$resolve.status}" />
     -->
     
     <dependency org="HMI"	name="HmiMiddlewareAbstractionLayer"	rev="latest.${resolve.status}" />
 	
 	<exclude module="AsapUnityResources" />
 	<exclude module="AsapBML" />
-	<exclude module="AsapAnimationEngine" />
 	<exclude module="AsapActiveMQRealizerAdapters" />
 	<exclude module="AsapMiddlewareEngine" />
 	<exclude module="AsapSpeechEngine" />
@@ -148,7 +148,6 @@
 	<exclude module="HmiMiddlewareAudioEnvironment" />
 	<exclude module="openbmlparser" />
 	<exclude module="AsapEnvironment" />
-	<exclude module="HmiAnimation" />
 	
   </dependencies>
 </ivy-module>
