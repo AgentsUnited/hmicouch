@@ -21,6 +21,19 @@ We use the following specific middlewares:
 # Build
 To build this module you need Ant and the HMI Build Tool, available in [this repository](https://github.com/ArticulatedSocialAgentsPlatform/hmibuild/tree/master). It must be placed in the parent folder, next to the *intent-planner* folder. Then run the commands `ant clean`, `ant resolve` and `ant compile`. Take a look at how it was done in the [demonstrator repository](https://github.com/AgentsUnited/demonstrator) readme instructions.
 
+## Optional: use Eclipse to develop, compile and run the CIP
+Of course, you are free to use which ever editor you like for editing and extending the CIP module. Compiling and running the project can always be done through the provided ant commands.
+
+If you prefer to use the Eclipse IDE, we have additional integration options in place, which enable you to compile and build directly within the IDE.
+
+- Download and install the latest [Python 2.7](https://www.python.org/downloads/release/python-2718/). Also add it in your PATH environment variable. Make sure that the `python` command in your commandline/terminal refers to the python 2.7 version, **NOT python 3** (check with `python --version`, this should print something like `Python 2.7.18`).
+- Download and install a recent version of [Eclipse](https://www.eclipse.org/downloads/) for Java developers. Make sure that the version you download matches with your installed java SDK (32bit or 64bit).
+- In a commandline window, navigate to the main intent-planner folder and run `ant eclipseproject`. This generates the necessary Eclipse project files, making sure that all dependencies are set correctly.
+- Start your Eclipse, and select `File->Import` from the main menu. This opens an Import popup window. Select `General->Existing Projects into Workspace` and press `Next`. Press `Select root directory` and click on `Browse...` to select the main `intent-planner` directory. The `IntentPlanner` project should now show up in the `Projects:` area. Make sure the project is selected. (None of the other options on this page should be selected.) Press the `Finish` button to import the project in Eclipse.
+- The Java source files are now automatically compiled as you edit them. The flipper templates are interpreted at run-time. You can launch the various components of this module from the `src/eu.couch.hmi.starters` package. `AsapCouchStarter` starts the ASAP realizer, and `FlipperStarter` starts the main CIP flipper instance.
+
+Whenever you make modifications to the dependencies in the `ivy.xml` file, you will need to re-run the `ant resolve`, `ant compile`, and `ant eclipseproject` commands. You can then right-click on the project in Eclipse and select `Refresh` to import the latest dependencies.
+
 # Configuring the system
 
 ## ASAP agents
