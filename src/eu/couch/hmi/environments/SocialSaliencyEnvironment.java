@@ -16,6 +16,7 @@ import eu.couch.hmi.moves.MoveSet;
 import hmi.flipper.environment.BaseFlipperEnvironment;
 import hmi.flipper.environment.FlipperEnvironmentMessageJSON;
 import hmi.flipper.environment.IFlipperEnvironment;
+import saiba.bml.feedback.BMLSyncPointProgressFeedback;
 import eu.couch.hmi.intent.planner.*;
 import hmi.flipper.bmlfeedback.BMLBlockProgressFeedbackJSON;
 import hmi.flipper.bmlfeedback.BMLPredictionFeedbackJSON;
@@ -154,8 +155,18 @@ public class SocialSaliencyEnvironment extends BaseFlipperEnvironment implements
 	
 	@Override
 	public void onBlockProgressFeedback(BMLBlockProgressFeedbackJSON fb) {
-		// TODO Auto-generated method stub
 		PlannedIntent pi = plannedIntentsByBlockId.get(fb.bmlId);
+		
+		//FIXME: super ugly hack for greta, who doesn't seem to offer syncPointFeedback.. 
+		//instead we simply create a fake syncpoint start and stop for behaviourId "s1" so that it triggers salient gaze behaviour
+		//this will, obviously, fail miserably when greta starts doing non-speech behaviours
+		if(pi != null && "greta".equalsIgnoreCase(pi.engine) && pi.text != null && !"".equals(pi.text)) {
+			double time = ("start".equals(fb.syncId)) ? 0.0d : 1.0d;
+			BMLSyncPointProgressFeedbackJSON spfb = new BMLSyncPointProgressFeedbackJSON(new BMLSyncPointProgressFeedback(fb.bmlId, "s1", fb.syncId, time, fb.globalTime));
+			logger.warn("generating fake syncpointProgressFeedback for greta: {}", spfb.flipperSyncId);
+			onSyncPointProgressFeedback(spfb);
+		}
+		
 		if (pi!=null && fb.syncId.equals("end")) {
 			plannedIntentsByBlockId.remove(fb.bmlId);
 			logger.info("dropped plannedintent from SSE; intent was finalized");
@@ -285,7 +296,7 @@ public class SocialSaliencyEnvironment extends BaseFlipperEnvironment implements
 //TODO: that is not quite right. Only MY addressees should be salient				
 				{
 					//also: great should not gaze at addressees
-					if (!charId.equals("COUCH_CAMILLE")) {
+					if (!charId.equals("COUCH_CAMILLE") && !charId.equals("COUCH_LAURA")) {
 						boolean specificAddressee = false;
 						for (String keyAddr:activeAddressees.keySet())
 						{                

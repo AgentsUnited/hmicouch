@@ -95,7 +95,7 @@ public class FloorManagementEnvironment extends MiddlewareEnvironment {
 			}
 			break;
 		case "RANDOM":
-			fm = new RandomFloorManager(this, 5000, 10000);
+			fm = new RandomFloorManager(this, 50000, 100000);
 			break;
 		default:
 			fm = new FCFSFloorManager();

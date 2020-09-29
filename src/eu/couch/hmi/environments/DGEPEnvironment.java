@@ -384,8 +384,17 @@ public class DGEPEnvironment extends MiddlewareEnvironment implements IMoveColle
 				m.dialogueID = res.dialogueID;
 				m.requestUserInput = extractMissingVariable(m) != null;
 			}
-			MoveSet moveSet = new MoveSet(actor.getIdentifier(), actor.getName(), res.dialogueID, moves);
-			_moveSets.add(new FilteredMoveSet(moveSet));
+			
+			/*
+			 * TODO: sometimes actors may be included in the moveset even when they actually have no moves at this point in the dialogue.. we may need a nicer fix for this at some point, but for now just ignore the moveset altogether
+			 * This may or may not change in the future! It is somewhat expected behaviour, in some cases
+			 * Mark: I think it might be to do with the DGDL specification. In most dialogue games a speaker is assigned and only that assigned speaker (or set of speakers if it’s a role, e.g. “agent”) is in the moves object even if they have no moves. 
+			 * Mark: I’m now trying to decide if there’s any reason to keep it like that. It seems a bit contradictory: “you can speak but you’re not allowed to say anything”. On the other hand, the same situation might come about if there’s moves available but the utterance generator doesn’t find content. So a case of “you can speak but you’ve nothing to say”. But I guess these are questions for another day!
+			 */
+			if(moves.length > 0) {
+				MoveSet moveSet = new MoveSet(actor.getIdentifier(), actor.getName(), res.dialogueID, moves);
+				_moveSets.add(new FilteredMoveSet(moveSet));
+			}
 		}
 		
 		for (IMoveFilter f : moveFilters) {
@@ -451,7 +460,7 @@ public class DGEPEnvironment extends MiddlewareEnvironment implements IMoveColle
 	 * @param move the completed move
 	 */
 	private void storeInSKB(Move move) {
-		if(move.vars.size() > 0) {
+		if(move.vars != null && move.vars.size() > 0) {
 			ObjectNode store = om.createObjectNode();
 			for(Entry<String, MoveVarValue> v : move.vars.entrySet()) {
 				String var = v.getKey();
@@ -585,6 +594,7 @@ class ParticipantResponse {
 	public ParticipantResponse() {}
 }
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 class ProtocolInitResponse {
 	public int dialogueID;
 	public ParticipantResponse[] participants;
@@ -618,6 +628,7 @@ class ProtocolMovesRequestParams {
 	}
 }
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 class ProtocolMovesResponse {
 	public int dialogueID;
 	public String status;

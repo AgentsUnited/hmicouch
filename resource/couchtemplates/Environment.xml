@@ -34,8 +34,8 @@ Environment for BORG Experiment
 							"HTTPRequestMethod": "POST"
 						}
 					},
-					"username":"test001@council-of-coaches.eu",
-					"password":"beqewymoh"
+					"username":"demouser2@council-of-coaches.eu",
+					"password":"demopassword2"
 				}
 			}, { 	
 				"id":"bml", "loader":"eu.couch.hmi.environments.BMLEnvironment", "requiredloaders": [],
@@ -128,7 +128,7 @@ Environment for BORG Experiment
 					"get-new-topic": {
 						"loaderClass": "nl.utwente.hmi.middleware.HTTPRequest.HTTPRequestLoader",
 						"properties": {
-							"HTTPRequestURL": "https://servletstest.rrdweb.nl/coaching-engine/get-new-topic",
+							"HTTPRequestURL": "https://servletstest.rrdweb.nl/topic-selection-engine/get-new-topic",
 							"HTTPRequestMethod": "GET"
 						}
 					}
@@ -165,7 +165,7 @@ Environment for BORG Experiment
 					"requiredloaders": [ "bml", "fml", "dialogueloader", "asapIntent", "gretaIntent" ],
 				"params": {
 					"sameSaliencyEpsilon":0.01,
-					"updateSpeed":50
+					"updateSpeed":500
 				}
 			}
 		]

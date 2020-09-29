@@ -71,16 +71,19 @@ public class FMLEnvironment extends BaseFlipperEnvironment implements IBMLFeedba
 					characterIds.add(next.asText());
 				}
 			}
-
+			
+			List<String> subscribedFeedbackTopics = new ArrayList<String>();
+			
 			// TODO: check if middlewares are successfully loaded and throw exception if not?
 			for (String charId: characterIds)
 			{
-				Properties mwPropsNext = new Properties(mwProperties);
-				mwPropsNext.setProperty("iTopic",mwPropsNext.getProperty("iTopicPrefix")+charId);
-				mwPropsNext.setProperty("oTopic",mwPropsNext.getProperty("oTopicPrefix")+charId);
-				GenericMiddlewareLoader gml = new GenericMiddlewareLoader(loaderClass, mwPropsNext);
+				Properties mwFMLProps = new Properties(mwProperties);
+				mwFMLProps.setProperty("iTopic",mwFMLProps.getProperty("iTopicPrefix")+charId);
+				mwFMLProps.setProperty("oTopic",mwFMLProps.getProperty("oTopicPrefix")+charId);
+				GenericMiddlewareLoader gml = new GenericMiddlewareLoader(loaderClass, mwFMLProps);
 				Middleware mw = gml.load();
-				mw.addListener(new MWListener(charId,this));
+				mw.addListener(new MWListener(charId,this, "FML-Listener"));
+				subscribedFeedbackTopics.add(mwFMLProps.getProperty("iTopic"));
 				middlewareForChars.put(charId,mw);
 			}
 			
@@ -91,12 +94,21 @@ public class FMLEnvironment extends BaseFlipperEnvironment implements IBMLFeedba
 				while (it.hasNext())
 				{
 					String charId = it.next();
-					Properties mwPropsBmlNext = new Properties(mwPropertiesBml);
-					mwPropsBmlNext.setProperty("iTopic",mwPropsBmlNext.getProperty("iTopicPrefix")+charId);
-					mwPropsBmlNext.setProperty("oTopic",mwPropsBmlNext.getProperty("oTopicPrefix")+charId);
-					GenericMiddlewareLoader gml = new GenericMiddlewareLoader(loaderClassBml, mwPropsBmlNext);
+					Properties mwBMLProps = new Properties(mwPropertiesBml);
+					mwBMLProps.setProperty("iTopic",mwBMLProps.getProperty("iTopicPrefix")+charId);
+					mwBMLProps.setProperty("oTopic",mwBMLProps.getProperty("oTopicPrefix")+charId);
+					GenericMiddlewareLoader gml = new GenericMiddlewareLoader(loaderClassBml, mwBMLProps);
 					Middleware mw = gml.load();
-					mw.addListener(new MWListener(charId,this));
+					
+					//apparently greta (sometimes..?) uses the same topic for FML feedback and BML feedback
+					//so we have to try not to subscribe twice, or we risk sending duplicate move-complete updates to DAF somewhere further in the pipeline..!
+					if(!subscribedFeedbackTopics.contains(mwBMLProps.getProperty("iTopic"))) {
+						mw.addListener(new MWListener(charId,this, "BML-Listener"));
+						subscribedFeedbackTopics.add(mwBMLProps.getProperty("iTopic"));
+					} else {
+						logger.warn("Ignoring duplicate feedback channel for FML and BML: {}", mwBMLProps.getProperty("iTopic"));
+					}
+					
 					middlewarebmlForChars.put(charId,mw);
 				}
 			}
@@ -172,17 +184,19 @@ class MWListener implements MiddlewareListener
 {
 	String charId = "greta";
 	FMLEnvironment theEnv = null;
+	private String mwListenerID;
 	
 	private static org.slf4j.Logger logger = LoggerFactory.getLogger(MWListener.class.getName());
 	
-	public MWListener(String newCharId, FMLEnvironment env)
+	public MWListener(String newCharId, FMLEnvironment env, String mwListenerID)
 	{
+		this.mwListenerID = mwListenerID;
 		charId = newCharId;
 		theEnv = env;
 	}
 	@Override
 	public void receiveData(JsonNode jn) {
-		logger.info("Greta feedback: "+jn.toString());
+		logger.info("Greta {} feedback for ID {}: {}", new String[] {charId, mwListenerID, jn.toString()});
 		if (jn.get("fml_id").asText().equals(""))return;
         if (!jn.has("timeMarker_id"))
         {

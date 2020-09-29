@@ -77,12 +77,18 @@ towards review:
 		"topicParams": { "topic":""},
 			"dialogueActors" : []},
 	"availableActors" : {
-		"Bob": { "bml_name":"", "engine":"ASAP",  "identifier":"User", "dialogueActorClass":"UIControllableActor", "priority": 0.0 },
-		"Francois": { "bml_name":"COUCH_M_2", "engine":"ASAP",  "identifier":"COUCH_M_2", "dialogueActorClass":"UIControllableActor", "priority": 0.5 },
-		"Olivia": { "bml_name":"COUCH_M_1", "engine":"ASAP", "identifier":"COUCH_M_1", "dialogueActorClass":"UIControllableActor", "priority": 0.5 }
+		"User": { "bml_name":"", "engine":"ASAP",  "identifier":"User", "dialogueActorClass":"UIControllableActor", "priority": 0.0 },
+		"Olivia": { "bml_name":"COUCH_CAMILLE", "engine":"greta",  "identifier":"COUCH_CAMILLE", "dialogueActorClass":"UIControllableActor", "priority": 0.5 },
+		"Emma": { "bml_name":"COUCH_F_1", "engine":"ASAP",  "identifier":"COUCH_F_1", "dialogueActorClass":"UIControllableActor", "priority": 0.5 },
+		"Rasmus": { "bml_name":"COUCH_M_2", "engine":"ASAP",  "identifier":"COUCH_M_2", "dialogueActorClass":"UIControllableActor", "priority": 0.5 },
+		"Carlos": { "bml_name":"COUCH_M_1", "engine":"ASAP", "identifier":"COUCH_M_1", "dialogueActorClass":"UIControllableActor", "priority": 0.5 },
+		"Helen": { "bml_name":"COUCH_LAURA", "engine":"greta",  "identifier":"COUCH_LAURA", "dialogueActorClass":"UIControllableActor", "priority": 0.5 }
 	 },
 	"uidefaults": {
-		"actors": [{ "identifier":"User", "controlledBy": ["unityTest"] }]
+		"actors": [
+		
+			{ "identifier":"User", "controlledBy": ["unityTest"] }
+		]
 	},
 	"initializedDialogueActors": {}
 }
@@ -93,6 +99,10 @@ var DIALOGUE = (function() {
 	var dialogueInitComplete = false;
 	
 	var generateDialogueSpec = function(req) {
+		
+		//use this to override whatever you get from the topic selection
+		//req = {"cmd":"new","topic":"agenttest","participants":[{"player": "AgentOne", "name": "Emma"}, {"player": "AgentTwo", "name": "Olivia"}, {"player": "AgentThree", "name": "Rasmus"}, {"player": "AgentFour", "name": "Carlos"}, {"player": "AgentFive", "name": "Helen"}, {"player": "User", "name": "User"}],"utteranceParams":[]};
+	
 		var ds = is.dialogue.dialogueSpec;
 		ds.dialogueActors = [];
 		for(var i = 0; i < req.participants.length; i++) {
@@ -108,14 +118,7 @@ var DIALOGUE = (function() {
 			}
 		}
 		
-		print("Requested DGEP topic: "+req.topic);
-		
-		//TODO: this is now a hardcoded selection of the topic file, Tessa should update her JSON to select the correct file
 		ds.topicParams.topic = req.topic;
-		//ds.topicParams.topic = "GoalSetting";
-		
-		//ds.topicParams.topic = "IntroExample";
-		//for the freetext input: {"cmd":"new","params":{"topic":"IntroExample","participants":[{"name":"xxx","player":"Agent"},{"name":"yyy","player":"User"}],"utteranceParams":{"xxx":{"personality":"authoritative"}},"authToken":"xyz"}}
 		
 		print("Loading DGEP topic: "+ds.topicParams.topic);
 		

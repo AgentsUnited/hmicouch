@@ -5,7 +5,7 @@ social saliency gaze. Mostly initialises some stuff, then sends "update saliency
 <is name="sse">{
 	"initialized": false, 
 	"settings": {
-		"updateSpeed":10000
+		"updateSpeed":100
 	}
 }</is>
 <javascript><![CDATA[
@@ -51,6 +51,7 @@ var SSE = (function() {
 		<assign is="is.sse.dummy">ENV.queueMessage("sse", "initNewCharacter", {charId: "COUCH_F_1",engine:"ASAP"})</assign>
 		<assign is="is.sse.dummy">ENV.queueMessage("sse", "initNewCharacter", {charId: "COUCH_M_2",engine:"ASAP"})</assign>
 		<assign is="is.sse.dummy">ENV.queueMessage("sse", "initNewCharacter", {charId: "COUCH_CAMILLE",engine:"GRETA"})</assign>
+		<assign is="is.sse.dummy">ENV.queueMessage("sse", "initNewCharacter", {charId: "COUCH_LAURA",engine:"GRETA"})</assign>
 		<!-- TODO: Initialize possible java helper objects, etc. -->
 	</effects>
 </template>

@@ -34,7 +34,6 @@ public class CCEEnvironment extends MiddlewareEnvironment {
 	public FlipperEnvironmentMessageJSON onMessage(FlipperEnvironmentMessageJSON fenvmsg) throws Exception {
 		switch (fenvmsg.cmd) {
 		case "get-new-topic":
-			//this request should be a GET without any query params, so just send an empty JSON node :)
 			getMW("get-new-topic").sendData(om.createObjectNode().put("user", authEnv.getUsername()));
 			break;
 		default:
