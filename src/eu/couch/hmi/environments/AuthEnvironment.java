@@ -1,5 +1,6 @@
 package eu.couch.hmi.environments;
 
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
@@ -7,9 +8,13 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.Properties;
 
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import org.slf4j.LoggerFactory;
@@ -120,7 +125,7 @@ public class AuthEnvironment extends MiddlewareEnvironment {
 	 */
 	private void doSSOLogin() {
 		JsonNode jn = om.valueToTree(new SSOLogin(username, authToken));
-		logger.info("Sending SSO login for user: {}", username);
+		logger.info("Sending SSO login for user: {}", jn);
 		getMW("SSOMiddleware").sendData(jn);
 		getMW("SSOCCEMiddleware").sendData(jn);
 	}
@@ -195,44 +200,82 @@ public class AuthEnvironment extends MiddlewareEnvironment {
  */
 class SSOFrame extends JFrame
 {
+	JPanel pLines; 
+	
 	JLabel lDescription;
+	
+	JPanel pUsername; 
 	JLabel lUsername;
-	JLabel lPassword;
 	JTextField tfUsername;
+	
+	JPanel pPassword; 
+	JLabel lPassword;
 	JTextField tfPassword;
+
+	JPanel pButtons; 
 	JButton bLogin; 
-	JButton bLogout; 
+	JButton bLogout;
 	
 	SSOFrame(String title, String defaultUsername, String defaultPassword, ActionListener loginAL, ActionListener logoutAL) {
 		super(title);
-		setLayout(new FlowLayout());
+		pLines = new JPanel();
+		pLines.setLayout(new BoxLayout(pLines, BoxLayout.PAGE_AXIS));
+		pLines.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
 
-		lDescription = new JLabel("SSO for Flipper, CCE and DAF");
-		add(lDescription);
-
+		//USERNAME
+		pUsername = new JPanel();
+		pUsername.setLayout(new BoxLayout(pUsername, BoxLayout.LINE_AXIS));
+		pUsername.setBorder(BorderFactory.createEmptyBorder(10,0,10,0));
+		
 		lUsername = new JLabel("Username:");
-		add(lUsername);
+		pUsername.add(lUsername);
+		
+		pUsername.add(Box.createRigidArea(new Dimension(10, 0)));
 		
 		tfUsername = new JTextField(defaultUsername, 20);
-		add(tfUsername);
+		pUsername.add(tfUsername);
 
-		lUsername = new JLabel("Password:");
-		add(lUsername);
+		//PASSWORD
+		pPassword = new JPanel();
+		pPassword.setLayout(new BoxLayout(pPassword, BoxLayout.LINE_AXIS));
+		pPassword.setBorder(BorderFactory.createEmptyBorder(0,0,10,0));
+		
+		lPassword = new JLabel("Password:");
+		pPassword.add(lPassword);
+		
+		pPassword.add(Box.createRigidArea(new Dimension(10, 0)));
 		
 		tfPassword = new JTextField(defaultPassword, 20);
-		add(tfPassword);
+		pPassword.add(tfPassword);
+
+		//LOGIN/LOGOUT BUTTONS
+		pButtons = new JPanel();
+		pButtons.setLayout(new BoxLayout(pButtons, BoxLayout.LINE_AXIS));
+		pButtons.add(Box.createHorizontalGlue());
+		pButtons.setBorder(BorderFactory.createEmptyBorder(0,10,10,10));
 		
 		bLogin = new JButton("Login");
 		bLogin.addActionListener(loginAL);
-		add(bLogin);
+		pButtons.add(bLogin);
+		
+		pButtons.add(Box.createRigidArea(new Dimension(10, 0)));
 		
 		bLogout = new JButton("Logout");
 		bLogout.addActionListener(logoutAL);
-		add(bLogout);
+		pButtons.add(bLogout);
+
+		//PUT IT ALL TOGETHER
+		lDescription = new JLabel("SSO for Flipper, CCE and DAF");
+		pLines.add(lDescription);
+		pLines.add(pUsername);
+		pLines.add(pPassword);
+
+		add(pLines, BorderLayout.CENTER);
+		add(pButtons, BorderLayout.PAGE_END);
 		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);   
 		
-		this.setSize(250, 200);     
+		this.setSize(320, 170);     
 		this.setVisible(true); 
 	}
 
