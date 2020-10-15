@@ -58,7 +58,7 @@ Environment for BORG Experiment
 						"loaderClass": "nl.utwente.hmi.middleware.activemq.ActiveMQMiddlewareLoader",
 						"properties": {
 							"iTopicPrefix": "COUCH/FEEDBACK/",
-							"oTopicPrefix": "COUCH/FML/REQUEST/"
+							"oTopicPrefix": "COUCH/MEANING_MINER_FML/REQUEST/"
 						}
 					},
 					"middlewarebml": {
@@ -77,6 +77,7 @@ Environment for BORG Experiment
 			}, {	
 				"id":"gretaIntent", "loader":"eu.couch.hmi.intent.planner.GretaIntentRealizer", "requiredloaders": [ "fml" ],
 				"params": {
+					"enableMeaningMiner":true,
 					"fmlTemplateDir":"fmltemplates"
 				}
 			}, {

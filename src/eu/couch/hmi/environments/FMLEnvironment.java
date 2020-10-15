@@ -33,7 +33,7 @@ public class FMLEnvironment extends BaseFlipperEnvironment implements IBMLFeedba
 	private static org.slf4j.Logger logger = LoggerFactory.getLogger(FMLEnvironment.class.getName());
 	  
 	List<IBMLFeedbackJSONListener> parsedFeedbackListeners;
-	
+
 	private boolean publishFmlFeedback = false;
     private ArrayList<String> characterIds = new ArrayList<String>();
 	ObjectMapper om;
@@ -41,6 +41,7 @@ public class FMLEnvironment extends BaseFlipperEnvironment implements IBMLFeedba
 	private HashMap<String,Middleware> middlewareForChars = new HashMap<String,Middleware>();
 
 	private HashMap<String,Middleware> middlewarebmlForChars = new HashMap<String,Middleware>();
+
 	
 	public FMLEnvironment() {
 		super();
@@ -59,7 +60,7 @@ public class FMLEnvironment extends BaseFlipperEnvironment implements IBMLFeedba
 			Properties mwProperties = getGMLProperties(params.get("middleware"));
 			String loaderClass = getGMLClass(params.get("middleware"));
 			if (loaderClass == null || mwProperties == null) throw new Exception("Invalid middleware spec in params");
-			
+
 			if (params.has("publishBmlFeedback")) {
 				publishFmlFeedback = params.get("publishBmlFeedback").asBoolean();
 			}

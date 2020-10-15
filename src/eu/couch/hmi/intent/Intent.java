@@ -29,5 +29,22 @@ public class Intent {
 		this.charId = a.bml_name;
 		this.engine = a.engine;
 	}
+	
+	public Intent copy() {
+		Intent copy = new Intent();
+		copy.minimalMoveCompletionId = minimalMoveCompletionId;
+		copy.addressee = addressee;
+		copy.text = text;
+		copy.charId = charId;
+		copy.moveId = moveId;
+		copy.engine = engine;
+		copy.uniqueIntentID = uniqueIntentID;
+		copy.fml_template = fml_template;
+		copy.bml_template = bml_template;
+		copy.url = url;
+		copy.deictic = deictic;
+		
+		return copy;
+	}
 
 }

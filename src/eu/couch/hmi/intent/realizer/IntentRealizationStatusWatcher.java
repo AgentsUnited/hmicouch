@@ -72,6 +72,10 @@ public abstract class IntentRealizationStatusWatcher extends BaseFlipperEnvironm
 		return intentId;
 	}
 	
+	public void registerIntentWatch(String intentId, IIntentRealizationObserver observer) {
+		watch.put(intentId, new IntentStatusWatch(intentId, observer));
+	}
+	
 	public String getSyncRef(String charId, String blockId, String sync) {
 		return charId + "___" + blockId + "___" + sync;
 	}
