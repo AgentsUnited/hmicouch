@@ -19,7 +19,7 @@ We use the following specific middlewares:
 - UDP for streaming audio and joint rotations for the various agents from ASAP to the Unity scene
 
 # Build
-To build this module you need Ant and the HMI Build Tool, available in [this repository](https://github.com/ArticulatedSocialAgentsPlatform/hmibuild/tree/master). It must be placed in the parent folder, next to the *intent-planner* folder. Then run the commands `ant clean`, `ant resolve` and `ant compile`. Take a look at how it was done in the [demonstrator repository](https://github.com/AgentsUnited/demonstrator) readme instructions.
+To build this module you need [Ant](https://ant.apache.org/manual/install.html). Furthermore, you need the [HMI Build Tool](https://github.com/ArticulatedSocialAgentsPlatform/hmibuild/tree/master), which must be placed in the parent project folder next to the *intent-planner* folder. Then run the commands `ant clean`, `ant resolve` and `ant compile` in a terminal from within the intent-planner folder. Take a look at how it was done in the [demonstrator repository](https://github.com/AgentsUnited/demonstrator) readme instructions.
 
 ## Optional: use Eclipse to develop, compile and run the CIP
 Of course, you are free to use which ever editor you like for editing and extending the CIP module. Compiling and running the project can always be done through the provided ant commands.
